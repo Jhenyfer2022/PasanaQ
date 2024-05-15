@@ -7,7 +7,10 @@ use App\Models\Juego;
 use App\Models\Turno;
 use App\Models\GanadorTurno;
 use App\Models\User;
+use App\Models\Pago;
 use Carbon\Carbon;
+
+use Illuminate\Support\Facades\DB;
 
 use App\Models\JuegoUser;
 
@@ -88,20 +91,10 @@ class GanadoCommand extends Command
                 //obtener de manera aleatoria al ganador
                 $usuario_ganador = $jugadores_que_aun_no_ganaron->random();
                 //escogerlo como el ganador del turno
-                GanadorTurno::create([
-                    'fecha'  => now(),
-                    'user_id'  => $usuario_ganador->id,
-                    'turno_id'  => $turno->id,
-                    'estado' => 'No se puede pagar',
-                ]);
+                $this->guardar_ganador_turno($usuario_ganador->id, $turno->id);
             }else{
                 //escogerlo como el ganador del turno
-                GanadorTurno::create([
-                    'fecha'  => now(),
-                    'user_id'  => $ofertaMayor->user_id,
-                    'turno_id'  => $ofertaMayor->turno->id,
-                    'estado' => 'No se puede pagar',
-                ]);
+                $this->guardar_ganador_turno($ofertaMayor->user_id, $ofertaMayor->turno->id);
             }
         });
 
@@ -148,5 +141,44 @@ class GanadoCommand extends Command
 
 
 
+    }
+
+    public function guardar_ganador_turno($user_id, $turno_id)
+    {
+        try {
+            DB::beginTransaction();
+            $ganadorTurno = new GanadorTurno();
+            $ganadorTurno->fecha = now();
+            $ganadorTurno->user_id = $user_id;
+            $ganadorTurno->turno_id = $turno_id;
+            $ganadorTurno->estado = 'No se puede pagar';
+            $ganadorTurno->save();
+
+            // Obtener el juego del GanadorTurno
+            $juego = $ganadorTurno->turno->juego;
+            // Obtener los usuarios con estado aceptado de este juego y que no sea el que gano
+            $usuarios_a_cobrar = $juego->juego_users()
+                ->where('estado', 'Aceptado')
+                ->whereNotIn('user_id', [$ganadorTurno->user_id])
+                ->get();
+            //echo "{$usuarios_a_cobrar}";
+            // Crear una orden de pago para cada usuario aceptado
+            foreach ($usuarios_a_cobrar as $usuario) {
+                $pago = Pago::create([
+                    "descripcion" => "test",
+                    "monto_dinero" => "100",
+                    "fecha_limite" => now(),
+                    "tipo" => "pago",
+                    "user_id" => $usuario->user_id,
+                    "turno_id" => $ganadorTurno->turno_id
+                ]);
+            }
+            // Commit de la transacción si todo se hizo correctamente
+            DB::commit();
+        } catch (\Exception $e) {
+            // Rollback de la transacción en caso de error
+            DB::rollBack();
+            throw $e;
+        }
     }
 }
