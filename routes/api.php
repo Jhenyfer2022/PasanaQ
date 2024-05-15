@@ -82,3 +82,8 @@ Route::post('/check_user', 'App\Http\Controllers\UserController@check_user_api')
 Route::get('/obtener_lista_de_juegos/{id}', 'App\Http\Controllers\UserController@obtener_lista_de_juegos');
 //lista de invitaciones de un usuario
 Route::get('/obtener_lista_de_invitaciones/{id}', 'App\Http\Controllers\UserController@obtener_lista_de_invitaciones');
+
+//lista de turnos de un juego
+Route::get('/obtener_listado_de_turnos/{id}', 'App\Http\Controllers\JuegoController@obtener_listado_de_turnos');
+//listado de ofertas en el turno
+Route::get('/obtener_listado_de_ofertas/{id}', 'App\Http\Controllers\TurnoController@obtener_listado_de_ofertas');

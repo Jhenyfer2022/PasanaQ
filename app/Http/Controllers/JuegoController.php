@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Models\Juego;
 use App\Models\JuegoUser;
+use App\Models\Turno;
+use DateTime;
 
 class JuegoController extends Controller
 {   //  MOVIL
@@ -47,7 +49,12 @@ class JuegoController extends Controller
             return response()->json(['errors' => $e->validator->errors()->all()], 422);
         }
         $juego = Juego::create([
+            'nombre' => $request->input('nombre'),
+            'limite_maximo_de_integrantes' => $request->input('limite_maximo_de_integrantes'),
+            'limite_minimo_de_integrantes' => $request->input('limite_minimo_de_integrantes'),
+            'estado' => $request->input('estado'),
             'fecha_de_inicio' => $request->input('fecha_de_inicio'),
+            'tiempo_para_ofertar' => $request->input('tiempo_para_ofertar'),
             'intervalo_tiempo' => $request->input('intervalo_tiempo'),
             'monto_dinero_individual' => $request->input('monto_dinero_individual'),
         ]);
@@ -98,9 +105,14 @@ class JuegoController extends Controller
         // Actualiza los datos del juego
         try {
             $juego->update([
+                'nombre' => $request->input('nombre'),
+                'limite_maximo_de_integrantes' => $request->input('limite_maximo_de_integrantes'),
+                'limite_minimo_de_integrantes' => $request->input('limite_minimo_de_integrantes'),
+                'estado' => $request->input('estado'),
                 'fecha_de_inicio' => $request->input('fecha_de_inicio'),
                 'intervalo_tiempo' => $request->input('intervalo_tiempo'),
                 'monto_dinero_individual' => $request->input('monto_dinero_individual'),
+                'tiempo_para_ofertar' => $request->input('tiempo_para_ofertar'),
             ]);
 
             return response()->json([
@@ -110,6 +122,28 @@ class JuegoController extends Controller
         } catch (\Exception $e) {
             // Si hay algún error al actualizar el juego, devuelve un mensaje de error
             return response()->json(['message' => 'Error al actualizar el juego'], 500);
+        }
+    }
+
+    public function obtener_listado_de_turnos($id)
+    {
+        // Encuentra el juego por su ID
+        $juego = Juego::find($id);
+        if (!$juego) {
+            return response()->json(
+                [
+                    'message' => 'Error al buscar los datos del juego'
+                ], 404
+            );
+        }else{
+            $turnos = $juego->turnos()->orderBy('created_at', 'asc')->get();;
+
+            return response()->json(
+                [
+                    'message' => 'Lista de Turnos', 
+                    'turnos' => $turnos
+                ], 200
+            );
         }
     }
 
@@ -138,7 +172,17 @@ class JuegoController extends Controller
         try {
             DB::beginTransaction();
             $user = Auth::user();
-            $juego_creado = Juego::create($request->all());
+            $juego_creado = Juego::create([
+                'nombre' => $request->nombre,
+                'limite_maximo_de_integrantes' => $request->limite_maximo_de_integrantes,
+                'limite_minimo_de_integrantes' => $request->limite_minimo_de_integrantes,
+                'fecha_de_inicio' => $request->fecha_de_inicio,
+                'tiempo_para_ofertar' => $request->tiempo_para_ofertar,
+                'intervalo_tiempo' => $request->intervalo_tiempo,
+                'monto_dinero_individual' => $request->monto_dinero_individual,
+                'estado' => "No Iniciado",
+            //    $request->all()
+            ]);
             $juego_user = JuegoUser::create([
                 'identificador_invitacion' => $user->email,
                 'rol_juego' => 'Lider',
@@ -149,6 +193,7 @@ class JuegoController extends Controller
             DB::commit();
             return redirect('home')->with('success', 'El Juego: '.$juego_creado->nombre.' fue creado exitosamente');
         } catch (\Exception $e) {
+            dd($e);
             // En caso de excepción
             DB::rollBack();
             return redirect()->back()->with('error', 'Ha ocurrido un error al crear el juego.');
@@ -162,5 +207,40 @@ class JuegoController extends Controller
         // Obtener los jugadores del juego
         $jugadores = $juego->juego_users;
         return view('juegos.show', compact('juego','jugadores'));
+    }
+
+    public function iniciar_juego($id){
+        try {
+            //Obtener el juego
+            $juego = Juego::findOrFail($id);
+            //obtener cantidad de jugadores
+            $jugadores = $juego->juego_users()->where('estado', 'Aceptado')->get();
+            if($jugadores->count() >= $juego->limite_minimo_de_integrantes){
+                DB::beginTransaction();
+                // Actualizar el campo estado del juego
+                $juego->estado = 'Iniciado';
+                $juego->save();
+                // Crear el primer turno para este juego
+                $primer_turno = new Turno();
+                $primer_turno->fecha_inicio = now();
+                // Calcular la fecha final sumando el intervalo de tiempo al juego
+                $intervalo_tiempo = $juego->intervalo_tiempo;
+                $fecha_inicio = new DateTime($primer_turno->fecha_inicio);
+                $fecha_final = $fecha_inicio->modify("+{$intervalo_tiempo} days")->format('Y-m-d');
+                $primer_turno->fecha_final = $fecha_final;
+                //indicar de que juego es el turno
+                $primer_turno->juego_id = $juego->id; // Asignar el ID del juego al turno
+                $primer_turno->save();
+                DB::commit();
+                return redirect()->back()->with('success', 'El juego ha sido Iniciado correctamente.');
+            }else{
+                return redirect()->back()->with('error', 'No cumples con el minimo de jugadores para iniciar el juego.');
+            }
+            
+        } catch (\Exception $e) {
+            // En caso de excepción
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Ha ocurrido un error al querer Iniciar el juego.');
+        }
     }
 }

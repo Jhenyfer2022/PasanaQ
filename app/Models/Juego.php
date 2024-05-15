@@ -15,6 +15,7 @@ class Juego extends Model
         'limite_minimo_de_integrantes',
         'fecha_de_inicio',
         'intervalo_tiempo',
+        'tiempo_para_ofertar',
         'monto_dinero_individual',
         'estado',
     ];
@@ -26,6 +27,7 @@ class Juego extends Model
             'limite_maximo_de_integrantes' => 'required|integer|min:1',
             'limite_minimo_de_integrantes' => 'required|integer|min:1',
             'fecha_de_inicio' => 'required|date',
+            'tiempo_para_ofertar' => 'required|date_format:H:i:s',
             'intervalo_tiempo' => 'required|integer|min:1',
             'monto_dinero_individual' => 'required|numeric|min:1',
             'estado' => 'required|string',

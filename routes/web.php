@@ -29,6 +29,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     //todas las rutas de juegos
     Route::resource('juegos', App\Http\Controllers\JuegoController::class);
+    //iniciar un juego
+    Route::get('/juego/{id}/iniciar_juego', 'App\Http\Controllers\JuegoController@iniciar_juego');
     //Correo ruta para web
     Route::post('/send-email-web', 'App\Http\Controllers\EmailController@sendEmailWeb');
     //WPP ruta para web

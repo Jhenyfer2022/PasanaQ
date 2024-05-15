@@ -46,6 +46,8 @@ class JuegoUserController extends Controller
             'juego_id' => $request->input('juego_id'),
             'user_id' => $request->input('user_id'),
             'rol_juego' => $request->input('rol_juego'),
+            'estado' => $request->input('estado'),
+            'identificador_invitacion' => $request->input('identificador_invitacion'),
         ]);
 
         return response()->json([
@@ -97,6 +99,8 @@ class JuegoUserController extends Controller
                 'juego_id' => $request->input('juego_id'),
                 'user_id' => $request->input('user_id'),
                 'rol_juego' => $request->input('rol_juego'),
+                'estado' => $request->input('estado'),
+                'identificador_invitacion' => $request->input('identificador_invitacion'),
             ]);
 
             return response()->json([

@@ -7,6 +7,7 @@
         $fecha_de_inicio  = "";
         $intervalo_tiempo  = 1;
         $monto_dinero_individual  = 100;
+        $tiempo_para_ofertar = "";
     }else{
         $nombre = $juego->nombre;
         $limite_maximo_de_integrantes  = $juego->limite_maximo_de_integrantes;
@@ -14,6 +15,7 @@
         $fecha_de_inicio  = $juego->fecha_de_inicio;
         $intervalo_tiempo  = $juego->intervalo_tiempo;
         $monto_dinero_individual  = $juego->monto_dinero_individual;
+        $tiempo_para_ofertar = $juego->tiempo_para_ofertar;
     }
 ?>
 
@@ -48,6 +50,10 @@
         <input type="number" name="monto_dinero_individual" class="form-control" id="monto_dinero_individual" value="{{$monto_dinero_individual}}">
     </div>
     
+    <div class="form-group">
+        <label for="tiempo_para_ofertar">Tiempo para ofertar:</label>
+        <input type="time" id="tiempo_para_ofertar" name="tiempo_para_ofertar" class="form-control" step="1" value="{{$tiempo_para_ofertar}}" required>
+    </div>
 </div>
 <!-- /.card-body -->
 <div class="card-footer">

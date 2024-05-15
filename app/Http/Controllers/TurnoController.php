@@ -108,4 +108,26 @@ class TurnoController extends Controller
             return response()->json(['message' => 'Error al actualizar el turno'], 500);
         }
     }
+
+    public function obtener_listado_de_ofertas($id)
+    {
+        // Encuentra el juego por su ID
+        $turno = Turno::find($id);
+        if (!$turno) {
+            return response()->json(
+                [
+                    'message' => 'Error al buscar los datos del turno'
+                ], 404
+            );
+        }else{
+            $ofertas = $turno->ofertas()->orderBy('monto_dinero', 'desc')->get();
+
+            return response()->json(
+                [
+                    'message' => 'Lista de ofertas', 
+                    'ofertas' => $ofertas
+                ], 200
+            );
+        }
+    }
 }
