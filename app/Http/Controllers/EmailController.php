@@ -22,21 +22,25 @@ class EmailController extends Controller
 
     public function sendEmailWeb(Request $request)
     {
-        $juego = Juego::findOrFail( $request->input('juego_id') );
-        $email = $request->input('email');
-        $subject = 'Te invitamos a participar en el pasanaku: ' . $juego->nombre;
-        $imageUrl = asset('img/qr_pasanku.png');
-        
-        $data = [
-            'juego' => $juego,
-            'imageUrl' => $imageUrl,
-        ]; // Puedes pasar datos adicionales a la plantilla si es necesario
+        try {
+            $juego = Juego::findOrFail( $request->input('juego_id') );
+            $email = $request->input('email');
+            $subject = 'Te invitamos a participar en el pasanaku: ' . $juego->nombre;
+            $imageUrl = asset('img/qr_pasanku.png');
+            
+            $data = [
+                'juego' => $juego,
+                'imageUrl' => $imageUrl,
+            ]; // Puedes pasar datos adicionales a la plantilla si es necesario
 
-        Mail::send('mails.invitation', $data, function ($message) use ($email, $subject) {
-            $message->to($email)->subject($subject);
-        });
-
-        return response()->noContent();
+            Mail::send('mails.invitation', $data, function ($message) use ($email, $subject) {
+                $message->to($email)->subject($subject);
+            });
+            return redirect()->back()->with('success', 'El Correo dirigido a: '. $email .' ha sido enviado exitosamente.');
+        } catch (\Exception $e) {
+            // En caso de excepción
+            return redirect()->back()->with('error', 'Ha ocurrido un error al enviar el correo.');
+        }
     }
 }
 

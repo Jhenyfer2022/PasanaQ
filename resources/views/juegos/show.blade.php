@@ -22,6 +22,16 @@
                         <h3 class="card-title">Datos del Juego</h3>
                     </div>
                     <div class="card-body">
+                        @if(session('success'))
+                            <div class="alert alert-success">
+                                {{ session('success') }}
+                            </div>
+                        @endif
+                        @if(session('error'))
+                            <div class="alert alert-danger">
+                                {{ session('error') }}
+                            </div>
+                        @endif
                         <div class="row justify-content-center align-items-center">
                             <div class="col-md-5 m-2 p-3 border border-dark rounded">
                                 <!-- Primer formulario -->
@@ -48,10 +58,22 @@
                                         </form>
                                     </div>
                                     <div class="col-md-11 m-1 p-3 border border-dark rounded">
-                                        <form>
-                                            <!-- Contenido del segundo formulario -->
+                                        <form action="{{ url('/send-wpp-web') }}" method="POST">
+                                            @csrf
+                                            <div class="form-group">
+                                                <label for="telephone">Enviar Invitacion por WhatsApp:</label>
+                                                <input type="hidden" name="juego_id" value="{{ $juego->id }}">
+                                                <input type="text" name="telephone" class="form-control" id="telephone" placeholder="Teléfono">
+                                            </div>
+                                            <br>
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <button type="submit" class="btn btn-primary">Enviar Invitacion</button>
+                                                </div>
+                                            </div>
                                         </form>
                                     </div>
+                                    
                                 </div>
                             </div>
                         </div>
