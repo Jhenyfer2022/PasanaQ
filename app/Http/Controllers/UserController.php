@@ -141,11 +141,11 @@ class UserController extends Controller
     }
 
     //web
-    /*public function index()
+    public function index()
     {
         // Recuperar todos los usuarios desde la base de datos
         $users = User::all();
         // Pasar los datos de los usuarios a la vista y renderizarla
         return view('users.index', ['users' => $users]);
-    }*/
+    }
 }
