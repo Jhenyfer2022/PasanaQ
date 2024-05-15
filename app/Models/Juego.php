@@ -18,7 +18,8 @@ class Juego extends Model
         'tiempo_para_ofertar',
         'monto_dinero_individual',
         'estado',
-        'monto_minimo_para_ofertar'
+        'monto_minimo_para_ofertar',
+        'monto_penalizacion',
     ];
 
     public static function rules()
@@ -32,6 +33,7 @@ class Juego extends Model
             'tiempo_para_ofertar' => 'required|date_format:H:i:s',
             'tiempo_por_turno' => 'required|date_format:H:i:s',
             'monto_dinero_individual' => 'required|numeric|min:1',
+            'monto_penalizacion' => 'required|numeric|min:1',
             'estado' => 'required|string',
         ];
     }

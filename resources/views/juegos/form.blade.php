@@ -9,6 +9,7 @@
         $monto_dinero_individual  = "100";
         $tiempo_para_ofertar = "";
         $monto_minimo_para_ofertar = "100";
+        $monto_penalizacion = "50";
     }else{
         $nombre = $juego->nombre;
         $limite_maximo_de_integrantes  = $juego->limite_maximo_de_integrantes;
@@ -18,6 +19,7 @@
         $monto_dinero_individual  = $juego->monto_dinero_individual;
         $tiempo_para_ofertar = $juego->tiempo_para_ofertar;
         $monto_minimo_para_ofertar = $juego->monto_minimo_para_ofertar;
+        $monto_penalizacion = $juego->monto_penalizacion;
     }
 ?>
 
@@ -60,6 +62,11 @@
     <div class="form-group">
         <label for="tiempo_para_ofertar">Tiempo para ofertar:</label>
         <input type="time" id="tiempo_para_ofertar" name="tiempo_para_ofertar" class="form-control" step="1" value="{{$tiempo_para_ofertar}}" required>
+    </div>
+
+    <div class="form-group">
+        <label for="monto_penalizacion">Monto de Penalizacion:</label>
+        <input type="time" id="monto_penalizacion" name="monto_penalizacion" class="form-control" step="1" value="{{$monto_penalizacion}}" required>
     </div>
 </div>
 <!-- /.card-body -->

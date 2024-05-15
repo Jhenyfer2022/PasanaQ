@@ -8,6 +8,7 @@ use App\Models\Turno;
 use App\Models\GanadorTurno;
 use App\Models\User;
 use App\Models\Pago;
+use App\Models\Oferta;
 use Carbon\Carbon;
 
 use Illuminate\Support\Facades\DB;
@@ -125,6 +126,9 @@ class GanadoCommand extends Command
                             $juego->save();
                             echo "El juego {$juego->nombre} se finalizo\n";
                         }else{
+                            //generar penalizaciones
+                            $this->generar_penalizaciones($ultimoTurno, $juego);
+                            //crear el siguiente turno
                             $turno = Turno::create([
                                 'fecha_inicio' => $fechaActual,
                                 'fecha_final' => $fechaFinalNueva,
@@ -161,20 +165,74 @@ class GanadoCommand extends Command
                 ->where('estado', 'Aceptado')
                 ->whereNotIn('user_id', [$ganadorTurno->user_id])
                 ->get();
-            //echo "{$usuarios_a_cobrar}";
+            //obtencion de la oferta que realizo en dicho turnno
+            $oferta = Oferta::where('user_id', $user_id)
+                ->where('turno_id', $turno_id)
+                ->first();
+            //resta de montos para monto a pagar nuevo
+            $monto_de_dinero = $juego->monto_dinero_individual;
+            if($oferta)
+            {
+                //si hay una oferta realizada por el jugador ganador restar este monto dividido en los jugadores
+                $monto_de_dinero = $juego->monto_dinero_individual - ( $oferta->monto_dinero / $usuarios_a_cobrar->count() );
+            }
             // Crear una orden de pago para cada usuario aceptado
             foreach ($usuarios_a_cobrar as $usuario) {
                 $pago = Pago::create([
-                    "descripcion" => "test",
-                    "monto_dinero" => "100",
+                    "descripcion" => "Descripcion de Pago",
+                    "monto_dinero" => $monto_de_dinero,
                     "fecha_limite" => now(),
-                    "tipo" => "pago",
+                    "tipo" => "Cuota",
                     "user_id" => $usuario->user_id,
                     "turno_id" => $ganadorTurno->turno_id,
                     "estado" => "No Pagado",
                 ]);
             }
             // Commit de la transacción si todo se hizo correctamente
+            DB::commit();
+        } catch (\Exception $e) {
+            // Rollback de la transacción en caso de error
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    public function generar_penalizaciones(Turno $turno_objeto, Juego $juego_objeto){
+        try {
+            DB::beginTransaction();
+            //obtener el ganador
+            $ganador = $turno_objeto->ganador_turnos()->first();
+            // Obtener los usuarios con estado aceptado de este juego y que no sea el que gano
+            $usuarios_que_deben_pagar = $juego_objeto->juego_users()
+                ->where('estado', 'Aceptado')
+                ->whereNotIn('user_id', [$ganador->user_id])
+                ->get();
+            // recorrer los usuarios 
+            foreach ($usuarios_que_deben_pagar as $usuario) {
+                $deuda_existente = Pago::where('user_id', $usuario->user_id)
+                    ->where('turno_id', $turno_objeto->id)
+                    ->where('estado', 'No Pagado')
+                    ->where('tipo', 'Cuota')
+                    ->first();
+                $contador_deudas_usuario = Pago::where('user_id', $usuario->user_id)
+                    ->where('turno_id', $turno_objeto->id)
+                    ->where('tipo', 'Penalizacion')
+                    ->count();
+
+                if($deuda_existente && $contador_deudas_usuario == 0){
+                    echo "se genero una Penalizacion para el user {$usuario->id}\n";
+                    $pago = Pago::create([
+                        "descripcion" => "Descripcion de Pago",
+                        "monto_dinero" => $juego_objeto->monto_penalizacion,
+                        "fecha_limite" => now(),
+                        "tipo" => "Penalizacion",
+                        "user_id" => $usuario->user_id,
+                        "turno_id" => $turno_objeto->id,
+                        "estado" => "No Pagado",
+                    ]);
+                }
+            }
+
             DB::commit();
         } catch (\Exception $e) {
             // Rollback de la transacción en caso de error

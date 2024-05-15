@@ -32,6 +32,9 @@
                                 <input type="text" class="form-control" id="limite_minimo_de_integrantes" value="{{$juego->limite_minimo_de_integrantes}}" readonly>
                                 <label for="fecha_de_inicio">Fecha de inicio:</label>
                                 <input type="text" class="form-control" id="fecha_de_inicio" value="{{$juego->fecha_de_inicio}}" readonly>    
+                                <label for="monto_penalizacion">Monto de Penalizacion:</label>
+                                <input type="text" class="form-control" id="monto_penalizacion" value="{{$juego->monto_penalizacion}}" readonly>
+                                
                             </div>
                             <div class="col-md-5 m-2 p-3" style="overflow-y: auto;">
                                 <label for="estado">Estado:</label>
@@ -40,6 +43,8 @@
                                 <input type="text" class="form-control" id="tiempo_por_turno" value="{{$juego->tiempo_por_turno}}" readonly>
                                 <label for="monto_dinero_individual">Monto de dinero que colocara cada jugador:</label>
                                 <input type="text" class="form-control" id="monto_dinero_individual" value="{{$juego->monto_dinero_individual}}" readonly>
+                                <label for="monto_minimo_para_ofertar">Monto minimo para ofertar:</label>
+                                <input type="text" class="form-control" id="monto_minimo_para_ofertar" value="{{$juego->monto_minimo_para_ofertar}}" readonly>
                             </div>
                         </div>
                         @if($juego->estado !== "No Iniciado")

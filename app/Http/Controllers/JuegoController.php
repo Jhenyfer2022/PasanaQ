@@ -58,6 +58,7 @@ class JuegoController extends Controller
             'tiempo_por_turno' => $request->input('tiempo_por_turno'),
             'monto_dinero_individual' => $request->input('monto_dinero_individual'),
             'monto_minimo_para_ofertar' => $request->input('monto_minimo_para_ofertar'),
+            'monto_penalizacion' => $request->input('monto_penalizacion'),
         ]);
 
         return response()->json([
@@ -115,6 +116,7 @@ class JuegoController extends Controller
                 'monto_dinero_individual' => $request->input('monto_dinero_individual'),
                 'tiempo_para_ofertar' => $request->input('tiempo_para_ofertar'),
                 'monto_minimo_para_ofertar' => $request->input('monto_minimo_para_ofertar'),
+                'monto_penalizacion' => $request->input('monto_penalizacion'),
             ]);
 
             return response()->json([
@@ -184,6 +186,7 @@ class JuegoController extends Controller
                 'monto_dinero_individual' => $request->monto_dinero_individual,
                 'tiempo_para_ofertar' => $request->tiempo_para_ofertar,
                 'monto_minimo_para_ofertar' => $request->monto_minimo_para_ofertar,
+                'monto_penalizacion' => $request->monto_penalizacion,
             ]);
             $juego_user = JuegoUser::create([
                 'identificador_invitacion' => $user->email,
