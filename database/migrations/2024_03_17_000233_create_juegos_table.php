@@ -26,6 +26,7 @@ return new class extends Migration
             $table->time('tiempo_para_ofertar')->nullable(false);
             $table->float('monto_dinero_individual', 10, 2)->nullable(false); // Precisión de 8 dígitos y 2 decimales
             $table->float('monto_minimo_para_ofertar', 10, 2)->nullable(false);
+            $table->float('monto_maximo_para_ofertar', 10, 2)->nullable(true);
             $table->float('monto_penalizacion', 10, 2)->nullable(false);
             $table->timestamps();
         });

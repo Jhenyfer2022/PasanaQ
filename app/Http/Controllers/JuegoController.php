@@ -59,6 +59,7 @@ class JuegoController extends Controller
             'monto_dinero_individual' => $request->input('monto_dinero_individual'),
             'monto_minimo_para_ofertar' => $request->input('monto_minimo_para_ofertar'),
             'monto_penalizacion' => $request->input('monto_penalizacion'),
+            'monto_maximo_para_ofertar' => $request->input('monto_maximo_para_ofertar'),
         ]);
 
         return response()->json([
@@ -117,6 +118,7 @@ class JuegoController extends Controller
                 'tiempo_para_ofertar' => $request->input('tiempo_para_ofertar'),
                 'monto_minimo_para_ofertar' => $request->input('monto_minimo_para_ofertar'),
                 'monto_penalizacion' => $request->input('monto_penalizacion'),
+                'monto_maximo_para_ofertar' => $request->input('monto_maximo_para_ofertar'),
             ]);
 
             return response()->json([
@@ -187,6 +189,7 @@ class JuegoController extends Controller
                 'tiempo_para_ofertar' => $request->tiempo_para_ofertar,
                 'monto_minimo_para_ofertar' => $request->monto_minimo_para_ofertar,
                 'monto_penalizacion' => $request->monto_penalizacion,
+                'monto_maximo_para_ofertar' => $request->monto_maximo_para_ofertar,
             ]);
             $juego_user = JuegoUser::create([
                 'identificador_invitacion' => $user->email,
@@ -253,6 +256,29 @@ class JuegoController extends Controller
             // En caso de excepción
             DB::rollBack();
             return redirect()->back()->with('error', 'Ha ocurrido un error al querer Iniciar el juego.');
+        }
+    }
+
+    public function obtener_listado_de_jugadores($id){
+        // Encuentra el juego por su ID
+        $juego = Juego::find($id);
+        if (!$juego) {
+            return response()->json(
+                [
+                    'message' => 'Error al buscar los datos del juego'
+                ], 404
+            );
+        }else{
+            $jugadores = $juego->juego_users()
+                ->whereNotIn('estado', ['En espera'])
+                ->get();
+            return response()->json(
+                [
+                    'message' => 'Lista de Jugadores del juego' ,
+                    'juego' => $juego, 
+                    'jugadores' => $jugadores
+                ], 200
+            );
         }
     }
 }
