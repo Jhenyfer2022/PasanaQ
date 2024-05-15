@@ -18,7 +18,7 @@ class WppController extends Controller
         $twilio = new Client($sid, $token);
         $tt = $request->input('telephone');
         $telephone = 'whatsapp:'.$tt;
-        //$telephone = 'whatsapp:+59177314094';
+        
         $twilioWhatsAppNumber = 'whatsapp:'.env('TWILIO_WHATSHAPP_NUMBER_FROM');
         $juego = Juego::findOrFail( $request->input('juego_id') );
         //dd($juego->nombre);
