@@ -36,6 +36,7 @@
                                             @csrf
                                             <div class="form-group">
                                                 <label for="email">Enviar Invitacion por Correo:</label>
+                                                <input type="hidden" name="juego_id" value="{{ $juego->id }}">
                                                 <input type="text" name="email" class="form-control" id="email" placeholder="Email">
                                             </div>
                                             <br>

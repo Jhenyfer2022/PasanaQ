@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use App\Models\Juego;
 
 class EmailController extends Controller
 {
@@ -21,11 +22,18 @@ class EmailController extends Controller
 
     public function sendEmailWeb(Request $request)
     {
+        $juego = Juego::findOrFail( $request->input('juego_id') );
         $email = $request->input('email');
-        $data = []; // Puedes pasar datos adicionales a la plantilla si es necesario
-        Mail::send('mails.invitation', $data, function ($message) use ($email) {
-            $message->to($email)
-                    ->subject('Asunto del correo');
+        $subject = 'Te invitamos a participar en el pasanaku: ' . $juego->nombre;
+        $imageUrl = asset('img/qr_pasanku.png');
+        
+        $data = [
+            'juego' => $juego,
+            'imageUrl' => $imageUrl,
+        ]; // Puedes pasar datos adicionales a la plantilla si es necesario
+
+        Mail::send('mails.invitation', $data, function ($message) use ($email, $subject) {
+            $message->to($email)->subject($subject);
         });
 
         return response()->noContent();
