@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use App\Models\Juego;
 use App\Models\Turno;
 use App\Models\GanadorTurno;
+use App\Models\User;
 use Carbon\Carbon;
 
 class GanadoCommand extends Command
@@ -55,6 +56,19 @@ class GanadoCommand extends Command
             $ofertaMayor = $turno->ofertas->sortByDesc('monto_dinero')->first();
             if($turno->ofertas->isEmpty() || !$ofertaMayor){
                 //buscar a un usuario del juego de manera random 
+                $jugadores_que_aun_no_ganaron = User::whereDoesntHave('ganador_turnos', function($query) use ($turno) {
+                    $query->where('turno_id', $turno->id);
+                })->whereHas('juego_users', function($query) use ($turno) {
+                    $query->where('juego_id', $turno->juego_id);
+                })->get();
+                //obtener de manera aleatoria al ganador
+                $usuario_ganador = $jugadores_que_aun_no_ganaron->random();
+                //escogerlo como el ganador del turno
+                GanadorTurno::create([
+                    'fecha'  => now(),
+                    'user_id'  => $usuario_ganador->id,
+                    'turno_id'  => $turno->id,
+                ]);
             }else{
                 //escogerlo como el ganador del turno
                 GanadorTurno::create([

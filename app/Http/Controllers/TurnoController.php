@@ -130,4 +130,26 @@ class TurnoController extends Controller
             );
         }
     }
+
+    public function obtener_ganador($id)
+    {
+        // Encuentra el juego por su ID
+        $turno = Turno::find($id);
+        if (!$turno) {
+            return response()->json(
+                [
+                    'message' => 'Error al buscar los datos del turno'
+                ], 404
+            );
+        }else{
+            $ganador = $turno->ganador_turnos->first();
+            $ganador->user;
+            return response()->json(
+                [
+                    'message' => 'El ganador del truno fue', 
+                    'ganador' => $ganador
+                ], 200
+            );
+        }
+    }
 }

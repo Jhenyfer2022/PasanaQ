@@ -87,3 +87,6 @@ Route::get('/obtener_lista_de_invitaciones/{id}', 'App\Http\Controllers\UserCont
 Route::get('/obtener_listado_de_turnos/{id}', 'App\Http\Controllers\JuegoController@obtener_listado_de_turnos');
 //listado de ofertas en el turno
 Route::get('/obtener_listado_de_ofertas/{id}', 'App\Http\Controllers\TurnoController@obtener_listado_de_ofertas');
+
+//obtener al ganador del turno
+Route::get('/obtener_ganador/{id}', 'App\Http\Controllers\TurnoController@obtener_ganador');

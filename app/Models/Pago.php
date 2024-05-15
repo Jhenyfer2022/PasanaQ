@@ -23,7 +23,7 @@ class Pago extends Model
         return [
             'descripcion' => 'nullable|string',
             'monto_dinero' => 'required|numeric|min:0',
-            'fecha_limite' => 'required|date',
+            'fecha_limite' => 'required|date_format:Y-m-d H:i:s',
             'tipo' => 'required|string',
             'user_id' => 'required|exists:users,id',
             'turno_id' => 'required|exists:turnos,id',

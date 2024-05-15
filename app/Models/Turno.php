@@ -18,8 +18,8 @@ class Turno extends Model
     public static function rules()
     {
         return [
-            'fecha_inicio' => 'required|date',
-            'fecha_final' => 'required|date',
+            'fecha_inicio' => 'required|date_format:Y-m-d H:i:s',
+            'fecha_final' => 'required|date_format:Y-m-d H:i:s',
             'juego_id' => 'required|exists:juegos,id',
         ];
     }

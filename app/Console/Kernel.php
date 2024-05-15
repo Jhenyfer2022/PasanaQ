@@ -13,6 +13,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('ganador:create')->everyMinute();
+        //$schedule->command('turno:create')->everyMinute();
     }
 
     protected function commands()

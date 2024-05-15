@@ -20,7 +20,7 @@ class Oferta extends Model
     {
         return [
             'monto_dinero' => 'required|numeric|min:0',
-            'fecha' => 'required|date',
+            'fecha' => 'required|date_format:Y-m-d H:i:s',
             'user_id' => 'required|exists:users,id',
             'turno_id' => 'required|exists:turnos,id',
         ];

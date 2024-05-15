@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('ganador_turnos', function (Blueprint $table) {
             $table->id();
-            $table->date('fecha')->nullable(false);
+            $table->dateTime('fecha')->nullable(false);
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('turno_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');

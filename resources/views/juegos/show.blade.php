@@ -36,8 +36,8 @@
                             <div class="col-md-5 m-2 p-3" style="overflow-y: auto;">
                                 <label for="estado">Estado:</label>
                                 <input type="text" class="form-control" id="estado" value="{{$juego->estado}}" readonly>
-                                <label for="intervalo_tiempo">Intervalo de tiempo en cada turno:</label>
-                                <input type="text" class="form-control" id="intervalo_tiempo" value="{{$juego->intervalo_tiempo}}" readonly>
+                                <label for="tiempo_por_turno">Intervalo de tiempo en cada turno:</label>
+                                <input type="text" class="form-control" id="tiempo_por_turno" value="{{$juego->tiempo_por_turno}}" readonly>
                                 <label for="monto_dinero_individual">Monto de dinero que colocara cada jugador:</label>
                                 <input type="text" class="form-control" id="monto_dinero_individual" value="{{$juego->monto_dinero_individual}}" readonly>
                             </div>

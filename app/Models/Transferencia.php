@@ -23,7 +23,7 @@ class Transferencia extends Model
     {
         return [
             'descripcion' => 'nullable|string',
-            'fecha' => 'required|date',
+            'fecha' => 'required|date_format:Y-m-d H:i:s',
             'monto_dinero' => 'required|numeric|min:0',
             'tipo' => 'required|string',
             'tipo_moneda' => 'required|string',

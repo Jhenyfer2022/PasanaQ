@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('ofertas', function (Blueprint $table) {
             $table->id();
             $table->float('monto_dinero', 10, 2)->nullable(false);
-            $table->date('fecha')->nullable(false);
+            $table->dateTime('fecha')->nullable(false);
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('turno_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');

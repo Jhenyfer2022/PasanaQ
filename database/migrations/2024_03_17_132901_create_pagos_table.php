@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->text('descripcion')->nullable();
             $table->float('monto_dinero', 10, 2)->nullable(false);
-            $table->date('fecha_limite')->nullable(false);
+            $table->dateTime('fecha_limite')->nullable(false);
             $table->string('tipo')->nullable(false);
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('turno_id');

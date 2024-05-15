@@ -55,7 +55,7 @@ class JuegoController extends Controller
             'estado' => $request->input('estado'),
             'fecha_de_inicio' => $request->input('fecha_de_inicio'),
             'tiempo_para_ofertar' => $request->input('tiempo_para_ofertar'),
-            'intervalo_tiempo' => $request->input('intervalo_tiempo'),
+            'tiempo_por_turno' => $request->input('tiempo_por_turno'),
             'monto_dinero_individual' => $request->input('monto_dinero_individual'),
         ]);
 
@@ -110,7 +110,7 @@ class JuegoController extends Controller
                 'limite_minimo_de_integrantes' => $request->input('limite_minimo_de_integrantes'),
                 'estado' => $request->input('estado'),
                 'fecha_de_inicio' => $request->input('fecha_de_inicio'),
-                'intervalo_tiempo' => $request->input('intervalo_tiempo'),
+                'tiempo_por_turno' => $request->input('tiempo_por_turno'),
                 'monto_dinero_individual' => $request->input('monto_dinero_individual'),
                 'tiempo_para_ofertar' => $request->input('tiempo_para_ofertar'),
             ]);
@@ -178,7 +178,7 @@ class JuegoController extends Controller
                 'limite_minimo_de_integrantes' => $request->limite_minimo_de_integrantes,
                 'fecha_de_inicio' => $request->fecha_de_inicio,
                 'tiempo_para_ofertar' => $request->tiempo_para_ofertar,
-                'intervalo_tiempo' => $request->intervalo_tiempo,
+                'tiempo_por_turno' => $request->tiempo_por_turno,
                 'monto_dinero_individual' => $request->monto_dinero_individual,
                 'estado' => "No Iniciado",
             //    $request->all()
@@ -223,10 +223,17 @@ class JuegoController extends Controller
                 // Crear el primer turno para este juego
                 $primer_turno = new Turno();
                 $primer_turno->fecha_inicio = now();
-                // Calcular la fecha final sumando el intervalo de tiempo al juego
-                $intervalo_tiempo = $juego->intervalo_tiempo;
-                $fecha_inicio = new DateTime($primer_turno->fecha_inicio);
-                $fecha_final = $fecha_inicio->modify("+{$intervalo_tiempo} days")->format('Y-m-d');
+                //obtener el tiempo para cada turno
+                $tiempo_por_turno = $juego->tiempo_por_turno;
+                //obtener la fecha de inicio
+                $fecha_inicio = $primer_turno->fecha_inicio;
+                // Convertir el tiempo por turno a un formato compatible con DateTime
+                $tiempo_array = explode(':', $tiempo_por_turno);
+                $horas = $tiempo_array[0];
+                $minutos = $tiempo_array[1];
+                $segundos = $tiempo_array[2];
+                // Sumar el tiempo por turno a la fecha de inicio
+                $fecha_final = $fecha_inicio->copy()->addHours($horas)->addMinutes($minutos)->addSeconds($segundos);
                 $primer_turno->fecha_final = $fecha_final;
                 //indicar de que juego es el turno
                 $primer_turno->juego_id = $juego->id; // Asignar el ID del juego al turno

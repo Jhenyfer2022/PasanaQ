@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('turnos', function (Blueprint $table) {
             $table->id();
-            $table->date('fecha_inicio')->nullable(false);
-            $table->date('fecha_final')->nullable(false);
+            $table->dateTime('fecha_inicio')->nullable(false);
+            $table->dateTime('fecha_final')->nullable(false);
             $table->unsignedBigInteger('juego_id');
             $table->foreign('juego_id')->references('id')->on('juegos')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
