@@ -13,21 +13,22 @@ class WppController extends Controller
 {
     public function sendWppWeb(Request $request)
     {
-        $sid    = env('TWILIO_SID');
-        $token  = env('TWILIO_AUTH_TOKEN');
-        $twilio = new Client($sid, $token);
+        $sid    = env('TWILIO_SID');//
+        $token  = env('TWILIO_AUTH_TOKEN');//
+        $twilio = new Client($sid, $token);//
+
         $tt = $request->input('telephone');
-        $telephone = 'whatsapp:'.$tt;
+        $telephone = 'whatsapp:'.$tt;//
         
-        $twilioWhatsAppNumber = 'whatsapp:'.env('TWILIO_WHATSHAPP_NUMBER_FROM');
+        $twilioWhatsAppNumber = 'whatsapp:'.env('TWILIO_WHATSHAPP_NUMBER_FROM');//
+        
         $juego = Juego::findOrFail( $request->input('juego_id') );
-        
-        $message = "¡Te invitamos a participar en el juego de pasanaku:'.$juego->nombre.'!";
+        $message = "¡Te invitamos a participar en el juego de pasanaku: ".$juego->nombre."!";
 
         try {
             DB::beginTransaction();
             JuegoUser::create([
-                'identificador_invitacion' => $telephone,
+                'identificador_invitacion' => $tt,
                 'rol_juego' => 'Jugador',
                 'juego_id' => $juego->id,
                 'user_id' => null,
