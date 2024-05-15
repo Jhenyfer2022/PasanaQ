@@ -24,7 +24,8 @@ class JuegoSeeder extends Seeder
             'fecha_de_inicio' => '2024-05-02 17:00:00',
             'tiempo_por_turno' => '00:2:00',
             'tiempo_para_ofertar' => '00:01:00',
-            'monto_dinero_individual' => 5000
+            'monto_dinero_individual' => 5000,
+            'monto_minimo_para_ofertar' => 100,
         ]);
 
         Juego::create([
@@ -35,7 +36,8 @@ class JuegoSeeder extends Seeder
             'fecha_de_inicio' => '2024-05-02 17:00:00',
             'tiempo_por_turno' => '00:2:00',
             'tiempo_para_ofertar' => '00:01:00',
-            'monto_dinero_individual' => 5000
+            'monto_dinero_individual' => 5000,
+            'monto_minimo_para_ofertar' => 100,
         ]);
     }
 }
