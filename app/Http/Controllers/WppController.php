@@ -21,7 +21,7 @@ class WppController extends Controller
         
         $twilioWhatsAppNumber = 'whatsapp:'.env('TWILIO_WHATSHAPP_NUMBER_FROM');
         $juego = Juego::findOrFail( $request->input('juego_id') );
-        //dd($juego->nombre);
+        
         $message = "¡Te invitamos a participar en el juego de pasanaku:'.$juego->nombre.'!";
 
         try {
