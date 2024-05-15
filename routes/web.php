@@ -32,3 +32,5 @@ Route::resource('juegos', App\Http\Controllers\JuegoController::class);
 
 //Mail routes
 Route::post('/send-email-web', 'App\Http\Controllers\EmailController@sendEmailWeb');
+//WPP routes
+Route::get('/send-wpp-web', 'App\Http\Controllers\WppController@sendWppWeb');
