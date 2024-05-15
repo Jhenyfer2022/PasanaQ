@@ -74,9 +74,9 @@ Route::delete('/transferencias/{id}', 'App\Http\Controllers\TransferenciaControl
 Route::put('/transferencias/{id}', 'App\Http\Controllers\TransferenciaController@update_api');
 
 
-
-
-
-
 //Mail routes
 Route::post('/send-email', 'App\Http\Controllers\EmailController@sendEmail');
+//check credentials
+Route::post('/check_user', 'App\Http\Controllers\UserController@check_user_api');
+//lista de juegos de un usuario
+Route::get('/obtener_lista_de_juegos/{id}', 'App\Http\Controllers\UserController@obtener_lista_de_juegos');
