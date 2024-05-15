@@ -66,7 +66,7 @@
 
     <div class="form-group">
         <label for="monto_penalizacion">Monto de Penalizacion:</label>
-        <input type="time" id="monto_penalizacion" name="monto_penalizacion" class="form-control" step="1" value="{{$monto_penalizacion}}" required>
+        <input type="number" id="monto_penalizacion" name="monto_penalizacion" class="form-control" step="1" value="{{$monto_penalizacion}}" required>
     </div>
 </div>
 <!-- /.card-body -->
