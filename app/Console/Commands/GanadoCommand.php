@@ -82,7 +82,7 @@ class GanadoCommand extends Command
                         $pago = Pago::create([
                             "descripcion" => "Descripcion de Pago",
                             "monto_dinero" => $juego_objeto->monto_penalizacion,
-                            "fecha_limite" => now(),
+                            "fecha_limite" => $turno_objeto->fecha_final,
                             "tipo" => "Penalizacion",
                             "user_id" => $usuario_id,
                             "turno_id" => $turno_objeto->id,
@@ -109,7 +109,7 @@ class GanadoCommand extends Command
                         $pago = Pago::create([
                             "descripcion" => "Descripcion de Pago",
                             "monto_dinero" => $juego_objeto->monto_penalizacion,
-                            "fecha_limite" => now(),
+                            "fecha_limite" => $turno_objeto->fecha_final,
                             "tipo" => "Penalizacion",
                             "user_id" => $usuario_id,
                             "turno_id" => $turno_objeto->id,
