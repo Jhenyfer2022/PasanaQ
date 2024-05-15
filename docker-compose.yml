@@ -1,0 +1,50 @@
+volumes:
+  db-store:
+
+services:
+  app_pasanaku:
+    build:
+      context: .
+      dockerfile: ./infra/docker/php/Dockerfile
+      target: ${APP_BUILD_TARGET:-deploy}
+    volumes:
+      - ./src:/workspace
+    environment:
+      - APP_DEBUG=${APP_DEBUG:-true}
+      - APP_ENV=${APP_ENV:-local}
+      - APP_URL=${APP_URL:-http://localhost}
+      - DB_CONNECTION=${DB_CONNECTION:-pgsql}
+      - DB_HOST=${DB_HOST:-db_pasanaku}
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_DATABASE=${DB_DATABASE:-pasanaku}
+      - DB_USERNAME=${DB_USERNAME:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-123123}
+
+  web_pasanaku:
+    build:
+      context: .
+      dockerfile: ./infra/docker/nginx/Dockerfile
+    ports:
+      - target: 8000
+        published: ${WEB_PUBLISHED_PORT:-8000}
+        protocol: tcp
+        mode: host
+    volumes:
+      - ./src:/workspace
+
+  db_pasanaku:
+    build:
+      context: .
+      dockerfile: ./infra/docker/postgresql/Dockerfile
+    ports:
+      - target: 5432
+        published: ${DB_PUBLISHED_PORT:-5432}
+        protocol: tcp
+        mode: host
+    volumes:
+      - db-store:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${DB_DATABASE:-pasanaku}
+      - POSTGRES_USER=${DB_USERNAME:-postgres}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-123123}
+      - POSTGRES_HOST_AUTH_METHOD=md5
