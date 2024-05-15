@@ -8,6 +8,7 @@
         $tiempo_por_turno  = "";
         $monto_dinero_individual  = 100;
         $tiempo_para_ofertar = "";
+        $monto_minimo_para_ofertar = 100;
     }else{
         $nombre = $juego->nombre;
         $limite_maximo_de_integrantes  = $juego->limite_maximo_de_integrantes;
@@ -16,6 +17,7 @@
         $tiempo_por_turno  = $juego->tiempo_por_turno;
         $monto_dinero_individual  = $juego->monto_dinero_individual;
         $tiempo_para_ofertar = $juego->tiempo_para_ofertar;
+        $monto_minimo_para_ofertar = $juego->monto_minimo_para_ofertar;
     }
 ?>
 
@@ -48,6 +50,11 @@
     <div class="form-group">
         <label for="monto_dinero_individual">Cantidad de dinero por jugador:</label>
         <input type="number" name="monto_dinero_individual" class="form-control" id="monto_dinero_individual" value="{{$monto_dinero_individual}}">
+    </div>
+
+    <div class="form-group">
+        <label for="monto_minimo_para_ofertar">Cantidad de dinero minimo para ofertar:</label>
+        <input type="number" name="monto_minimo_para_ofertar" class="form-control" id="monto_minimo_para_ofertar" value="{{$monto_minimo_para_ofertar}}">
     </div>
     
     <div class="form-group">
