@@ -49,6 +49,7 @@ class PagoController extends Controller
             'tipo' => $request->input('tipo'),
             'user_id' => $request->input('user_id'),
             'turno_id' => $request->input('turno_id'),
+            'estado' => $request->input('estado'),
         ]);
 
         return response()->json([
@@ -103,6 +104,7 @@ class PagoController extends Controller
                 'tipo' => $request->input('tipo'),
                 'user_id' => $request->input('user_id'),
                 'turno_id' => $request->input('turno_id'),
+                'estado' => $request->input('estado'),
             ]);
 
             return response()->json([

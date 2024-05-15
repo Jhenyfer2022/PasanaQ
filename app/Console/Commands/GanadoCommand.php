@@ -170,7 +170,8 @@ class GanadoCommand extends Command
                     "fecha_limite" => now(),
                     "tipo" => "pago",
                     "user_id" => $usuario->user_id,
-                    "turno_id" => $ganadorTurno->turno_id
+                    "turno_id" => $ganadorTurno->turno_id,
+                    "estado" => "No Pagado",
                 ]);
             }
             // Commit de la transacción si todo se hizo correctamente

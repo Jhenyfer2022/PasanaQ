@@ -38,39 +38,4 @@ class GanadorTurno extends Model
     {
         return $this->belongsTo(Turno::class);
     }
-
-    /*protected static function boot()
-    {
-        parent::boot();
-
-        static::saved(function ($ganadorTurno) {
-            // Obtener el juego del GanadorTurno
-            $juego = $ganadorTurno->turno->juego;
-            // Obtener los usuarios con estado aceptado de este juego y que no sea el que gano
-            $usuarios_a_cobrar = $juego->juego_users()
-                ->where('estado', 'Aceptado')
-                ->whereNotIn('user_id', [$ganadorTurno->user_id])
-                ->get();
-            try {
-                DB::beginTransaction();
-                // Crear una orden de pago para cada usuario aceptado
-                foreach ($usuarios_a_cobrar as $usuario) {
-                    $pago = Pago::create([
-                        "descripcion" => "test",
-                        "monto_dinero" => "100",
-                        "fecha_limite" => now(),
-                        "tipo" => "pago",
-                        "user_id" => $usuario->id,
-                        "turno_id" => $ganadorTurno->turno_id
-                    ]);
-                }
-                // Commit de la transacción si todo se hizo correctamente
-                DB::commit();
-            } catch (\Exception $e) {
-                // Rollback de la transacción en caso de error
-                DB::rollBack();
-                throw $e;
-            }
-        });
-    }*/
 }

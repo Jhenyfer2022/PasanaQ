@@ -224,4 +224,26 @@ class UserController extends Controller
         // Pasar los datos de los usuarios a la vista y renderizarla
         return view('users.index', ['users' => $users]);
     }
+
+    public function obtener_pagos($id)
+    {
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(
+                [
+                    'message' => 'Error al buscar los datos del usuario'
+                ], 404
+            );
+        }else{
+            $pagos = $user->pagos;
+
+            return response()->json(
+                [
+                    'message' => 'Lista de pagos del usuario', 
+                    'user' => $user,
+                    'pagos' => $pagos
+                ], 200
+            );
+        }
+    }
 }

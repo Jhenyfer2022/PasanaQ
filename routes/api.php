@@ -90,3 +90,6 @@ Route::get('/obtener_listado_de_ofertas/{id}', 'App\Http\Controllers\TurnoContro
 
 //obtener al ganador del turno
 Route::get('/obtener_ganador/{id}', 'App\Http\Controllers\TurnoController@obtener_ganador');
+
+//obtener listado de pagos del usuario (todos)
+Route::get('/obtener_pagos/{id}', 'App\Http\Controllers\UserController@obtener_pagos');

@@ -16,6 +16,7 @@ class Pago extends Model
         'tipo',
         'user_id',
         'turno_id',
+        'estado',
     ];
 
     public static function rules()
@@ -27,6 +28,7 @@ class Pago extends Model
             'tipo' => 'required|string',
             'user_id' => 'required|exists:users,id',
             'turno_id' => 'required|exists:turnos,id',
+            'estado' => 'required|string',
         ];
     }
 
