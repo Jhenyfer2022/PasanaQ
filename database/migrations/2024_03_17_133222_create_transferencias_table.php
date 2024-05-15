@@ -20,8 +20,10 @@ return new class extends Migration
             $table->float('monto_dinero', 10, 2)->nullable(false);
             $table->string('tipo')->nullable(false);
             $table->string('tipo_moneda')->nullable(false);
-            $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
+            
+            $table->unsignedBigInteger('pago_id');
+            $table->foreign('pago_id')->references('id')->on('pagos')->onDelete('cascade')->onUpdate('cascade');
+            
             $table->unsignedBigInteger('cuenta_id');
             $table->foreign('cuenta_id')->references('id')->on('cuentas')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();

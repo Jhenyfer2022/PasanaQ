@@ -27,7 +27,7 @@ class Transferencia extends Model
             'monto_dinero' => 'required|numeric|min:0',
             'tipo' => 'required|string',
             'tipo_moneda' => 'required|string',
-            'user_id' => 'required|exists:users,id',
+            'pago_id' => 'required|exists:pagos,id',
             'cuenta_id' => 'required|exists:cuentas,id',
         ];
     }
@@ -37,8 +37,8 @@ class Transferencia extends Model
         return $this->belongsTo(Cuenta::class);
     }
     
-    public function user()
+    public function pago()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Pago::class);
     }
 }

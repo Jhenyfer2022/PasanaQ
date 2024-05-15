@@ -8,7 +8,7 @@ use App\Models\User;
 
 class UserController extends Controller
 {
-    //movil
+    //movil listado
     public function index_api()
     {
         // Recuperar todos los usuarios desde la base de datos
@@ -21,7 +21,7 @@ class UserController extends Controller
             200
         );
     }
-    //movil
+    //movil ver
     public function show_api($id)
     {
         $user = User::find($id);
@@ -31,7 +31,7 @@ class UserController extends Controller
 
         return response()->json(['user' => $user], 200);
     }
-    //movil
+    //movil guardar
     public function store_api(Request $request)
     {
         //validame del modelo las reglas de negocio de mi User
@@ -50,6 +50,7 @@ class UserController extends Controller
             'email' => $request->input('email'),
             'direccion' => $request->input('direccion'),
             'password' => bcrypt($request->input('password')),
+            'rol_app' => $request->input('rol_app'),
         ]);
 
         return response()->json([
@@ -57,7 +58,7 @@ class UserController extends Controller
             'user' => $user
         ], 201);
     }
-    //movil
+    //movil eliminar
     public function delete_api($id)
     {
         // Encuentra al usuario por su ID
@@ -75,7 +76,7 @@ class UserController extends Controller
             return response()->json(['message' => 'Error al eliminar el usuario'], 500);
         }
     }
-    //movil
+    //movil actualizar
     public function update_api(Request $request, $id)
     {
         // Encuentra al usuario por su ID
@@ -105,6 +106,7 @@ class UserController extends Controller
                 'email' => $request->input('email'),
                 'direccion' => $request->input('direccion'),
                 'password' => bcrypt($request->input('password')),
+                'rol_app' => $request->input('rol_app'),
             ]);
 
             return response()->json([
@@ -116,10 +118,27 @@ class UserController extends Controller
             return response()->json(['message' => 'Error al actualizar el usuario'], 500);
         }
     }
-
-
-
-
+    //movil ver lista de cuentas
+    public function index_cuentas_api($id)
+    {
+        // Encuentra al usuario por su ID
+        $user = User::find($id);
+        // Verifica si el usuario existe
+        if (!$user) {
+            return response()->json(['message' => 'Usuario no encontrado para listar sus cuentas'], 404);
+        }
+        // Obtén las cuentas del usuario
+        //$cuentas = 
+        $user->cuentas;
+        // Remueve las cuentas del objeto user
+        //unset($user->cuentas);
+        //obtener respuesta
+        return response()->json([
+            'message' => 'Usuario obtenido y sus cuentas existentes', 
+            'user' => $user,
+            //'cuentas' => $cuentas,
+        ], 200);
+    }
 
     //web
     /*public function index()

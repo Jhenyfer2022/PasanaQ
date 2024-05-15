@@ -12,6 +12,7 @@ class JuegoUser extends Model
     protected $fillable = [
         'juego_id',
         'user_id',
+        'rol_juego',
     ];
 
     public static function rules()
@@ -19,6 +20,7 @@ class JuegoUser extends Model
         return [
             'juego_id' => 'required|exists:juegos,id',
             'user_id' => 'required|exists:users,id',
+            'rol_juego' => 'required|string',
         ];
     }
 

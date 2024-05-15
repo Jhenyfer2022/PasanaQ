@@ -25,6 +25,7 @@ class User extends Authenticatable
         'email',
         'direccion',
         'password',
+        'rol_app',
     ];
 
     /**
@@ -56,6 +57,7 @@ class User extends Authenticatable
             'email' => 'required|email|unique:users',
             'direccion' => 'nullable|string',
             'password' => 'required|string',
+            'rol_app' => 'required|string',
         ];
     }
 
@@ -63,10 +65,6 @@ class User extends Authenticatable
         return $this->hasMany(JuegoUser::class);
     }
     
-    public function rol_users() {
-        return $this->hasMany(RolUser::class);
-    }
-
     public function pagos()
     {
         return $this->hasMany(Pago::class);
@@ -85,10 +83,5 @@ class User extends Authenticatable
     public function cuentas()
     {
         return $this->hasMany(Cuenta::class);
-    }
-
-    public function transferencias()
-    {
-        return $this->hasMany(Transferencia::class);
     }
 }

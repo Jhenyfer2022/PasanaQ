@@ -45,6 +45,7 @@ class JuegoUserController extends Controller
         $juegouser = JuegoUser::create([
             'juego_id' => $request->input('juego_id'),
             'user_id' => $request->input('user_id'),
+            'rol_juego' => $request->input('rol_juego'),
         ]);
 
         return response()->json([
@@ -95,6 +96,7 @@ class JuegoUserController extends Controller
             $juegouser->update([
                 'juego_id' => $request->input('juego_id'),
                 'user_id' => $request->input('user_id'),
+                'rol_juego' => $request->input('rol_juego'),
             ]);
 
             return response()->json([

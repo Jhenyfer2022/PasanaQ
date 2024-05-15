@@ -39,4 +39,9 @@ class Pago extends Model
     {
         return $this->belongsTo(Turno::class);
     }
+
+    public function transferencias()
+    {
+        return $this->hasMany(Transferencia::class);
+    }
 }

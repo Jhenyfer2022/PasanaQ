@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('juego_users', function (Blueprint $table) {
             $table->id();
+            $table->string('rol_juego')->nullable(false);
             $table->unsignedBigInteger('juego_id');
             $table->unsignedBigInteger('user_id');
             $table->foreign('juego_id')->references('id')->on('juegos')->onDelete('cascade')->onUpdate('cascade');
