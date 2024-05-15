@@ -43,4 +43,22 @@ class Turno extends Model
     {
         return $this->hasMany(Oferta::class);
     }
+
+    public function obtener_jugadores_que_aun_no_ganado()
+    {
+        $usuarios = $this->juego->juego_users()
+            ->where('estado', 'Aceptado')
+            ->whereNotIn('user_id', function ($query) {
+                $query->select('user_id')
+                    ->from('ganador_turnos')
+                    ->join('turnos', 'ganador_turnos.turno_id', '=', 'turnos.id')
+                    ->where('turnos.juego_id', $this->juego_id);
+            })
+            ->get()
+            ->map(function ($juegoUser) {
+                return $juegoUser->user;
+            });
+        
+        return $usuarios;
+    }
 }

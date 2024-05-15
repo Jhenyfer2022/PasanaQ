@@ -46,6 +46,8 @@ class GanadorTurnoController extends Controller
             'fecha' => $request->input('fecha'),
             'user_id' => $request->input('user_id'),
             'turno_id' => $request->input('turno_id'),
+            'qr_gandor_deposito' => $request->input('qr_gandor_deposito'),
+            'estado' => $request->input('estado'),
         ]);
 
         return response()->json([
@@ -97,6 +99,8 @@ class GanadorTurnoController extends Controller
                 'fecha' => $request->input('fecha'),
                 'user_id' => $request->input('user_id'),
                 'turno_id' => $request->input('turno_id'),
+                'qr_gandor_deposito' => $request->input('qr_gandor_deposito'),
+                'estado' => $request->input('estado'),
             ]);
 
             return response()->json([
@@ -105,7 +109,7 @@ class GanadorTurnoController extends Controller
             ], 200);
         } catch (\Exception $e) {
             // Si hay algún error al actualizar el ganadorturno, devuelve un mensaje de error
-            return response()->json(['message' => 'Error al actualizar el GanadorTurno'], 500);
+            return response()->json(['message' => $e], 500);
         }
     }
 }

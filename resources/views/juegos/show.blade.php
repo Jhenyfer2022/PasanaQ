@@ -28,7 +28,7 @@
                             <div class="col-md-5 m-2 p-3" style="overflow-y: auto;">
                                 <label for="limite_maximo_de_integrantes">Limite maximo de jugadores:</label>
                                 <input type="text" class="form-control" id="limite_maximo_de_integrantes" value="{{$juego->limite_maximo_de_integrantes}}" readonly>
-                                <label for="limite_minimo_de_integrantes">Limite maximo de jugadores:</label>
+                                <label for="limite_minimo_de_integrantes">Limite minimo de jugadores:</label>
                                 <input type="text" class="form-control" id="limite_minimo_de_integrantes" value="{{$juego->limite_minimo_de_integrantes}}" readonly>
                                 <label for="fecha_de_inicio">Fecha de inicio:</label>
                                 <input type="text" class="form-control" id="fecha_de_inicio" value="{{$juego->fecha_de_inicio}}" readonly>    
