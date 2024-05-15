@@ -72,3 +72,11 @@ Route::get('/transferencias/{id}', 'App\Http\Controllers\TransferenciaController
 Route::post('/transferencias', 'App\Http\Controllers\TransferenciaController@store_api');
 Route::delete('/transferencias/{id}', 'App\Http\Controllers\TransferenciaController@delete_api');
 Route::put('/transferencias/{id}', 'App\Http\Controllers\TransferenciaController@update_api');
+
+
+
+
+
+
+//Mail routes
+Route::post('/send-email', 'App\Http\Controllers\EmailController@sendEmail');
