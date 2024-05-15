@@ -2,6 +2,17 @@
 
 @section('content')
 <div class="container">
+    @if (session('success'))
+    <div class="toast bg-success text-white" role="alert" aria-live="assertive" aria-atomic="true" data-delay="5000" style="position: absolute; top: 20px; right: 20px;">
+        <div class="toast-header bg-success text-white">
+            <strong class="me-auto">Éxito</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            {{ session('success') }}
+        </div>
+    </div>
+    @endif
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card">
@@ -40,4 +51,9 @@
         </div>
     </div>
 </div>
+<script>
+    $(document).ready(function(){
+        $(".toast").toast('show');
+    });
+</script>
 @endsection

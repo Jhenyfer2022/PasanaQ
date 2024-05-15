@@ -15,9 +15,12 @@ return new class extends Migration
     {
         Schema::create('juego_users', function (Blueprint $table) {
             $table->id();
+            
+            $table->string('identificador_invitacion')->nullable(false);
             $table->string('rol_juego')->nullable(false);
+            $table->string('estado')->nullable(false);
             $table->unsignedBigInteger('juego_id');
-            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('user_id')->nullable(); // user_id es nullable
             $table->foreign('juego_id')->references('id')->on('juegos')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();

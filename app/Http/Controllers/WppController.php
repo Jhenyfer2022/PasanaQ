@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Twilio\Rest\Client;
+use Illuminate\Support\Facades\DB;
+
 use App\Models\Juego;
+use App\Models\JuegoUser;
 
 class WppController extends Controller
 {
@@ -22,6 +25,15 @@ class WppController extends Controller
         $message = "¡Te invitamos a participar en el juego de pasanaku:'.$juego->nombre.'!";
 
         try {
+            DB::beginTransaction();
+            JuegoUser::create([
+                'identificador_invitacion' => $telephone,
+                'rol_juego' => 'Jugador',
+                'juego_id' => $juego->id,
+                'user_id' => null,
+                'estado' => 'En espera',
+            ]);
+
             $twilio->messages->create(
                 $telephone, // to
                 array(
@@ -29,9 +41,11 @@ class WppController extends Controller
                     "body" => $message,
                 )
             );
+            DB::commit();
             return redirect()->back()->with('success', 'El WhatsApp dirigido a: '. $tt .' ha sido enviado exitosamente.');
         } catch (\Exception $e) {
             // En caso de excepción
+            DB::rollBack();
             return redirect()->back()->with('error', 'Ha ocurrido un error al enviar al WhatsApp.');
         }
     }

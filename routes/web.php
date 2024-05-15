@@ -24,13 +24,13 @@ Auth::routes(
 
 Route::get('/logout', 'App\Http\Controllers\Auth\LoginController@logout');
 
-//Route::get('/users', 'App\Http\Controllers\UserController@index');
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-Route::resource('juegos', App\Http\Controllers\JuegoController::class);
-
-//Mail routes
-Route::post('/send-email-web', 'App\Http\Controllers\EmailController@sendEmailWeb');
-//WPP routes
-Route::post('/send-wpp-web', 'App\Http\Controllers\WppController@sendWppWeb');
+Route::middleware(['auth'])->group(function () {
+    //Route::get('/users', 'App\Http\Controllers\UserController@index');
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    //todas las rutas de juegos
+    Route::resource('juegos', App\Http\Controllers\JuegoController::class);
+    //Correo ruta para web
+    Route::post('/send-email-web', 'App\Http\Controllers\EmailController@sendEmailWeb');
+    //WPP ruta para web
+    Route::post('/send-wpp-web', 'App\Http\Controllers\WppController@sendWppWeb');
+});

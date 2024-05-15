@@ -1,9 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
-use Illuminate\Http\Request;
-use App\Models\Juego;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+
+use App\Models\Juego;
+use App\Models\JuegoUser;
 
 class JuegoController extends Controller
 {   //  MOVIL
@@ -131,13 +135,32 @@ class JuegoController extends Controller
 
     public function store(Request $request)
     {
-        Juego::create($request->all());
-        return redirect('home');
+        try {
+            DB::beginTransaction();
+            $user = Auth::user();
+            $juego_creado = Juego::create($request->all());
+            $juego_user = JuegoUser::create([
+                'identificador_invitacion' => $user->email,
+                'rol_juego' => 'Lider',
+                'juego_id' => $juego_creado->id,
+                'user_id' => $user->id,
+                'estado' => 'Aceptado',
+            ]);
+            DB::commit();
+            return redirect('home')->with('success', 'El Juego: '.$juego_creado->nombre.' fue creado exitosamente');
+        } catch (\Exception $e) {
+            // En caso de excepción
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Ha ocurrido un error al crear el juego.');
+        }
+        
     }
 
     public function show($id)
     {
         $juego = Juego::findOrFail($id);
-        return view('juegos.show', compact('juego'));
+        // Obtener los jugadores del juego
+        $jugadores = $juego->juego_users;
+        return view('juegos.show', compact('juego','jugadores'));
     }
 }

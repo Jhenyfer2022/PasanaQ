@@ -4,9 +4,8 @@
 <section class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
-            <div class="col-sm-6">
-                <h1>Juego: {{$juego->nombre}}</h1>
-            </div>
+            <h1>Juego: {{$juego->nombre}}</h1>
+            
         </div>
     </div>
 </section>
@@ -32,12 +31,30 @@
                                 {{ session('error') }}
                             </div>
                         @endif
-                        <div class="row justify-content-center align-items-center">
-                            <div class="col-md-5 m-2 p-3 border border-dark rounded">
+                        <div class="row justify-content-center align-items-center" id="parentDiv">
+                            
+                            <div class="col-md-5 m-2 p-3 border border-dark rounded" id="firstDiv" style="overflow-y: auto;">
                                 <!-- Primer formulario -->
-                                Jugadores en espera
+                                <h3>Listado de Jugadores</h3>
+                                <!-- Aquí puedes hacer tu foreach -->
+                                <table id="tablaJugadores" class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Email/Telefono</th>
+                                            <th>Estado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($jugadores as $jugador)
+                                        <tr>
+                                            <td>{{ $jugador->identificador_invitacion }}</td>
+                                            <td>{{ $jugador->estado }}</td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
                             </div>
-                            <div class="col-md-5 m-2 p-3 border border-dark rounded">
+                            <div class="col-md-5 m-2 p-3 border border-dark rounded" id="secondDiv">
                                 <!-- Segundo formulario -->
                                 <h2 style="text-align: center;" >Enviar invitacion</h2>
                                 <div class="row">
@@ -95,6 +112,13 @@
         <!-- /.row -->
     </div><!-- /.container-fluid -->
 </section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var secondDivHeight = document.getElementById("secondDiv").clientHeight;
+        document.getElementById("firstDiv").style.height = secondDivHeight + "px";
+    });
+</script>
 @endsection
 
 
