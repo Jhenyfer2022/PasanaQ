@@ -58,4 +58,37 @@ class User extends Authenticatable
             'password' => 'required|string',
         ];
     }
+
+    public function juego_users() {
+        return $this->hasMany(JuegoUser::class);
+    }
+    
+    public function rol_users() {
+        return $this->hasMany(RolUser::class);
+    }
+
+    public function pagos()
+    {
+        return $this->hasMany(Pago::class);
+    }
+
+    public function ganador_turnos()
+    {
+        return $this->hasMany(GanadorTurno::class);
+    }
+
+    public function ofertas()
+    {
+        return $this->hasMany(Oferta::class);
+    }
+
+    public function cuentas()
+    {
+        return $this->hasMany(Cuenta::class);
+    }
+
+    public function transferencias()
+    {
+        return $this->hasMany(Transferencia::class);
+    }
 }

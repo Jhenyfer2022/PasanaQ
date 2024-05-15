@@ -19,6 +19,7 @@ class Cuenta extends Model
         'user_id'
         
     ];
+
     public static function rules()
     {
         return [
@@ -28,9 +29,17 @@ class Cuenta extends Model
             'aa' => 'required|integer',
             'cvc' => 'required|integer',
             'ciudad' => 'required|string',
-            'user_id' => 'required|string'
+            'user_id' => 'required|exists:users,id',
         ];
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
+    public function transferencias()
+    {
+        return $this->hasMany(Transferencia::class);
+    }
 }
