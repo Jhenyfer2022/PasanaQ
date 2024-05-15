@@ -19,7 +19,7 @@
 </head>
 <body>
     <div id="app">
-        <main class="vh-100" style="background-color: #2d8596;">
+        <main class="py-4" class="vh-100" style="background-color: #2d8596;">
             @yield('content')
         </main>
     </div>

@@ -108,4 +108,36 @@ class JuegoController extends Controller
             return response()->json(['message' => 'Error al actualizar el juego'], 500);
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public function create()
+    {
+        $juego = null;
+        return view('juegos.create', compact('juego'));
+    }
+
+    public function store(Request $request)
+    {
+        Juego::create($request->all());
+        return redirect('home');
+    }
+
+    public function show($id)
+    {
+        $juego = Juego::findOrFail($id);
+        return view('juegos.show', compact('juego'));
+    }
 }

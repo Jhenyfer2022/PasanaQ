@@ -13,9 +13,22 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Auth::routes(
+    [
+        'register' => false, // Deshabilitar el registro de usuarios
+        'reset' => false, // Deshabilitar restablecimiento de contraseña
+        'verify' => false, // Deshabilitar verificación de correo electrónico
+        'confirm' => false, // Deshabilitar confirmación de contraseña
+    ]
+);
 
-Route::get('/users', 'App\Http\Controllers\UserController@index');
+Route::get('/logout', 'App\Http\Controllers\Auth\LoginController@logout');
 
-Auth::routes();
+//Route::get('/users', 'App\Http\Controllers\UserController@index');
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Route::resource('juegos', App\Http\Controllers\JuegoController::class);
+
+//Mail routes
+Route::post('/send-email-web', 'App\Http\Controllers\EmailController@sendEmailWeb');

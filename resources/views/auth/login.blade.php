@@ -1,8 +1,8 @@
 @extends('layouts.app_out')
 
 @section('content')
-    <div class="container py-5">
-        <div class="card" style="border-radius: 1rem;">
+    <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
+        <div class="card" style="width: 60%; border-radius: 1rem;">
             <div class="row">
                 <div class="col-md-6 col-lg-5 d-none d-md-block">
                     <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/img1.webp" alt="login form" class="img-fluid" style="border-radius: 1rem 0 0 1rem;" />
@@ -44,7 +44,7 @@
                                 @enderror
                             </div>
 
-                            <button type="submit" class="btn btn-dark btn-lg btn-block" type="button">Iniciar</button>
+                            <button type="submit" class="btn btn-dark btn-lg btn-block">Iniciar</button>
                         </form>
                     </div>
                 </div>

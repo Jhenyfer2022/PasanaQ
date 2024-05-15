@@ -18,4 +18,17 @@ class EmailController extends Controller
 
         return response()->json(['message' => 'Correo enviado'], 200);
     }
+
+    public function sendEmailWeb(Request $request)
+    {
+        $email = $request->input('email');
+        $data = []; // Puedes pasar datos adicionales a la plantilla si es necesario
+        Mail::send('mails.invitation', $data, function ($message) use ($email) {
+            $message->to($email)
+                    ->subject('Asunto del correo');
+        });
+
+        return response()->noContent();
+    }
 }
+

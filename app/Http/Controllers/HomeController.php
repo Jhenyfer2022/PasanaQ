@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Juego;
 
 class HomeController extends Controller
 {
@@ -23,6 +24,12 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $juegos = Juego::all();
+        return view('home', compact('juegos'));
+    }
+
+    public function welcome()
+    {
+        return view('welcome');
     }
 }
