@@ -23,7 +23,7 @@ class WppController extends Controller
         $twilioWhatsAppNumber = 'whatsapp:'.env('TWILIO_WHATSHAPP_NUMBER_FROM');//
         
         $juego = Juego::findOrFail( $request->input('juego_id') );
-        $message = "¡Te invitamos a participar en el juego de pasanaku: ".$juego->nombre."!";
+        $message = "¡Te invitamos a participar en el juego de pasanaku: ".$juego->nombre."!\nEscanea el QR para poder descargar nuestra aplicación.";
 
         try {
             DB::beginTransaction();
@@ -40,6 +40,7 @@ class WppController extends Controller
                 array(
                     "from" => $twilioWhatsAppNumber,
                     "body" => $message,
+                    'mediaUrl' => 'http://146.190.146.167/public/img/qr_pasanku.png'
                 )
             );
             DB::commit();

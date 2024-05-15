@@ -92,7 +92,7 @@
                                 </div>
                             </div>
                         @endif
-                        @if($juego->estado !== 'Iniciado')
+                        @if($juego->estado !== 'Iniciado' && $juego->estado !== 'Finalizado')
                             <div class="row justify-content-center align-items-center" id="parentDivTwo">
                                 <div class="col-md-5 m-2 p-3 border border-dark rounded" id="firstDiv" style="overflow-y: auto;">
                                     <!-- Primer formulario -->
@@ -162,7 +162,7 @@
                     <div class="card-footer">
                         <div class="row">
                             <div>
-                                @if($juego->estado !== 'Iniciado')
+                                @if($juego->estado !== 'Iniciado' && $juego->estado !== 'Finalizado')
                                     <a class="btn btn-success" href="{{ url('/juego/' . $juego->id . '/iniciar_juego') }}">
                                         Iniciar Juego
                                     </a>

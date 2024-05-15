@@ -178,12 +178,12 @@ class JuegoController extends Controller
                 'nombre' => $request->nombre,
                 'limite_maximo_de_integrantes' => $request->limite_maximo_de_integrantes,
                 'limite_minimo_de_integrantes' => $request->limite_minimo_de_integrantes,
+                'estado' => "No Iniciado",
                 'fecha_de_inicio' => $request->fecha_de_inicio,
-                'tiempo_para_ofertar' => $request->tiempo_para_ofertar,
                 'tiempo_por_turno' => $request->tiempo_por_turno,
                 'monto_dinero_individual' => $request->monto_dinero_individual,
-                'estado' => "No Iniciado",
-            //    $request->all()
+                'tiempo_para_ofertar' => $request->tiempo_para_ofertar,
+                'monto_minimo_para_ofertar' => $request->monto_minimo_para_ofertar,
             ]);
             $juego_user = JuegoUser::create([
                 'identificador_invitacion' => $user->email,
