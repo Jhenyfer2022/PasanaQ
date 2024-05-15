@@ -18,11 +18,13 @@ class Juego extends Model
         'tiempo_para_ofertar',
         'monto_dinero_individual',
         'estado',
+        'monto_minimo_para_ofertar'
     ];
 
     public static function rules()
     {
         return [
+            'monto_minimo_para_ofertar' => 'required|numeric|min:0',
             'nombre' => 'required|string',
             'limite_maximo_de_integrantes' => 'required|integer|min:1',
             'limite_minimo_de_integrantes' => 'required|integer|min:1',

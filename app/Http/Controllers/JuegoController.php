@@ -57,6 +57,7 @@ class JuegoController extends Controller
             'tiempo_para_ofertar' => $request->input('tiempo_para_ofertar'),
             'tiempo_por_turno' => $request->input('tiempo_por_turno'),
             'monto_dinero_individual' => $request->input('monto_dinero_individual'),
+            'monto_minimo_para_ofertar' => $request->input('monto_minimo_para_ofertar'),
         ]);
 
         return response()->json([
@@ -113,6 +114,7 @@ class JuegoController extends Controller
                 'tiempo_por_turno' => $request->input('tiempo_por_turno'),
                 'monto_dinero_individual' => $request->input('monto_dinero_individual'),
                 'tiempo_para_ofertar' => $request->input('tiempo_para_ofertar'),
+                'monto_minimo_para_ofertar' => $request->input('monto_minimo_para_ofertar'),
             ]);
 
             return response()->json([
