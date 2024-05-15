@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('pagos', function (Blueprint $table) {
             $table->id();
-            $table->text('descripcion');
+            $table->text('descripcion')->nullable();
             $table->float('monto_dinero', 10, 2)->nullable(false);
             $table->date('fecha_limite')->nullable(false);
             $table->string('tipo')->nullable(false);

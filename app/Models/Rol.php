@@ -8,4 +8,18 @@ use Illuminate\Database\Eloquent\Model;
 class Rol extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'nombre',
+        'detalle',
+    ];
+
+    
+    public static function rules()
+    {
+        return [
+            'nombre' => 'required|string',
+            //'detalle' => 'string',
+        ];
+    }
 }

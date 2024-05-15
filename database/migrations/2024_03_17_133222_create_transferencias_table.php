@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('transferencias', function (Blueprint $table) {
             $table->id();
-            $table->text('descripcion');
+            $table->text('descripcion')->nullable();
             $table->date('fecha')->nullable(false);
             $table->float('monto_dinero', 10, 2)->nullable(false);
             $table->string('tipo')->nullable(false);

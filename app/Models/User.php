@@ -18,8 +18,12 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'nombre',
+        'fecha_de_nacimiento',
+        'telefono',
+        'ci',
         'email',
+        'direccion',
         'password',
     ];
 
@@ -41,4 +45,17 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public static function rules()
+    {
+        return [
+            'nombre' => 'required|string',
+            'fecha_de_nacimiento' => 'required|date',
+            'telefono' => 'required|string',
+            'ci' => 'required|string',
+            'email' => 'required|email|unique:users',
+            'direccion' => 'nullable|string',
+            'password' => 'required|string',
+        ];
+    }
 }
