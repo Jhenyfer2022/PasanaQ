@@ -80,3 +80,5 @@ Route::post('/send-email', 'App\Http\Controllers\EmailController@sendEmail');
 Route::post('/check_user', 'App\Http\Controllers\UserController@check_user_api');
 //lista de juegos de un usuario
 Route::get('/obtener_lista_de_juegos/{id}', 'App\Http\Controllers\UserController@obtener_lista_de_juegos');
+//lista de invitaciones de un usuario
+Route::get('/obtener_lista_de_invitaciones/{id}', 'App\Http\Controllers\UserController@obtener_lista_de_invitaciones');

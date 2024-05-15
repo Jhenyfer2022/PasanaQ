@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 
 //llamada a los modelos
 use App\Models\User;
+use App\Models\JuegoUser;
 
 class UserController extends Controller
 {
@@ -191,7 +192,30 @@ class UserController extends Controller
             );
         }
     }
+    //obtener listado de invitaciones
+    public function obtener_lista_de_invitaciones($id)
+    {
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(
+                [
+                    'message' => 'Error buscar los datos del usuario'
+                ], 404
+            );
+        }else{
+            $invitaciones = JuegoUser::where(function ($query) use ($user) {
+                $query->where('identificador_invitacion', $user->email)
+                    ->orWhere('identificador_invitacion', $user->telefono);
+            })->with('juego')->get();
 
+            return response()->json(
+                [
+                    'message' => 'Lista de Invitaciones', 
+                    'invitaciones' => $invitaciones
+                ], 200
+            );
+        }
+    }
     //web
     public function index()
     {
