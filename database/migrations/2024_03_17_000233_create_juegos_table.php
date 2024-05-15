@@ -15,13 +15,13 @@ return new class extends Migration
     {
         Schema::create('juegos', function (Blueprint $table) {
             $table->id();
-            
+
             $table->string('nombre')->nullable(false);
             $table->integer('limite_maximo_de_integrantes')->nullable(false);
             $table->integer('limite_minimo_de_integrantes')->nullable(false);
             $table->string('estado')->default("No Iniciado");
             $table->dateTime('fecha_de_inicio')->nullable(false);
-            $table->time('tiempo_por_turno')->nullable(false);
+            $table->time('tiempo_para_pagar_todo')->nullable(false);
             //$table->integer('intervalo_tiempo')->nullable(false);
             $table->time('tiempo_para_ofertar')->nullable(false);
             $table->float('monto_dinero_individual', 10, 2)->nullable(false); // Precisión de 8 dígitos y 2 decimales

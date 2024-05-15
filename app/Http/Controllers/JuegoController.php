@@ -10,6 +10,7 @@ use App\Models\Juego;
 use App\Models\JuegoUser;
 use App\Models\Turno;
 use DateTime;
+use Carbon\Carbon;
 
 class JuegoController extends Controller
 {   //  MOVIL
@@ -21,7 +22,7 @@ class JuegoController extends Controller
         return response()->json(
             [
                 'juegos' => $juegos,
-            ], 
+            ],
             200
         );
     }
@@ -55,7 +56,7 @@ class JuegoController extends Controller
             'estado' => $request->input('estado'),
             'fecha_de_inicio' => $request->input('fecha_de_inicio'),
             'tiempo_para_ofertar' => $request->input('tiempo_para_ofertar'),
-            'tiempo_por_turno' => $request->input('tiempo_por_turno'),
+            'tiempo_para_pagar_todo' => $request->input('tiempo_para_pagar_todo'),
             'monto_dinero_individual' => $request->input('monto_dinero_individual'),
             'monto_minimo_para_ofertar' => $request->input('monto_minimo_para_ofertar'),
             'monto_penalizacion' => $request->input('monto_penalizacion'),
@@ -63,7 +64,7 @@ class JuegoController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'Juego creado correctamente', 
+            'message' => 'Juego creado correctamente',
             'juego' => $juego
         ], 201);
     }
@@ -113,7 +114,7 @@ class JuegoController extends Controller
                 'limite_minimo_de_integrantes' => $request->input('limite_minimo_de_integrantes'),
                 'estado' => $request->input('estado'),
                 'fecha_de_inicio' => $request->input('fecha_de_inicio'),
-                'tiempo_por_turno' => $request->input('tiempo_por_turno'),
+                'tiempo_para_pagar_todo' => $request->input('tiempo_para_pagar_todo'),
                 'monto_dinero_individual' => $request->input('monto_dinero_individual'),
                 'tiempo_para_ofertar' => $request->input('tiempo_para_ofertar'),
                 'monto_minimo_para_ofertar' => $request->input('monto_minimo_para_ofertar'),
@@ -146,7 +147,7 @@ class JuegoController extends Controller
 
             return response()->json(
                 [
-                    'message' => 'Lista de Turnos', 
+                    'message' => 'Lista de Turnos',
                     'turnos' => $turnos
                 ], 200
             );
@@ -184,7 +185,7 @@ class JuegoController extends Controller
                 'limite_minimo_de_integrantes' => $request->limite_minimo_de_integrantes,
                 'estado' => "No Iniciado",
                 'fecha_de_inicio' => $request->fecha_de_inicio,
-                'tiempo_por_turno' => $request->tiempo_por_turno,
+                'tiempo_para_pagar_todo' => $request->tiempo_para_pagar_todo,
                 'monto_dinero_individual' => $request->monto_dinero_individual,
                 'tiempo_para_ofertar' => $request->tiempo_para_ofertar,
                 'monto_minimo_para_ofertar' => $request->monto_minimo_para_ofertar,
@@ -206,7 +207,7 @@ class JuegoController extends Controller
             DB::rollBack();
             return redirect()->back()->with('error', 'Ha ocurrido un error al crear el juego.');
         }
-        
+
     }
 
     public function show($id)
@@ -232,11 +233,20 @@ class JuegoController extends Controller
                 $primer_turno = new Turno();
                 $primer_turno->fecha_inicio = now();
                 //obtener el tiempo para cada turno
-                $tiempo_por_turno = $juego->tiempo_por_turno;
+                $tiempo_para_pagar_todo = $juego->tiempo_para_pagar_todo;
                 //obtener la fecha de inicio
                 $fecha_inicio = $primer_turno->fecha_inicio;
                 // Convertir el tiempo por turno a un formato compatible con DateTime
-                $tiempo_array = explode(':', $tiempo_por_turno);
+
+
+                $tiempo_para_pagar_todo = Carbon::createFromFormat('H:i:s', $juego->tiempo_para_pagar_todo);
+                $tiempo_para_ofertar = Carbon::createFromFormat('H:i:s', $juego->tiempo_para_ofertar);
+
+                $tiempo_total = $tiempo_para_pagar_todo->addHours($tiempo_para_ofertar->hour)
+                                                      ->addMinutes($tiempo_para_ofertar->minute)
+                                                      ->addSeconds($tiempo_para_ofertar->second);
+                $tiempo_array = explode(':', $tiempo_total);
+
                 $horas = $tiempo_array[0];
                 $minutos = $tiempo_array[1];
                 $segundos = $tiempo_array[2];
@@ -251,7 +261,7 @@ class JuegoController extends Controller
             }else{
                 return redirect()->back()->with('error', 'No cumples con el minimo de jugadores para iniciar el juego.');
             }
-            
+
         } catch (\Exception $e) {
             // En caso de excepción
             DB::rollBack();
@@ -275,7 +285,7 @@ class JuegoController extends Controller
             return response()->json(
                 [
                     'message' => 'Lista de Jugadores del juego' ,
-                    'juego' => $juego, 
+                    'juego' => $juego,
                     'jugadores' => $jugadores
                 ], 200
             );

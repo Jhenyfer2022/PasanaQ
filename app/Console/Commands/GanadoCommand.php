@@ -38,75 +38,155 @@ class GanadoCommand extends Command
      */
     public function handle()
     {
-        /////////esto para generar los ganadores
-
         //obtener el listado de todos los juegos iniciados
         $juegos = Juego::where('estado', 'Iniciado')->get();
-        //listado de los ultimos turnos de los juegos iniciados
-        $ultimosTurnos = collect([]);
+        //listado de los ultimos turnos de los juegos iniciados (los que ya pasaro su tiempo para ofertar)
+        $ultimosTurnos = $this->obtener_ultimo_turno_de_cada_juego_que_no_tengan_ganadores($juegos);
+        //recorer todos los turnos que ya aya pasado su tiempo de ofertar y que necesitan generar ganador
+        $this->asignar_un_ganador_para_cada_turno($ultimosTurnos);
         
+        //validar si paso el tiempo de los pagos
+        $this->generar_Penalizaciones_y_Transferencias_de_los_turnos($juegos);
+        //generar los siguientes turnos o finalizar el juego
+        $this->generar_siguiente_turno($juegos);
+    }
+
+    public function generar_penalizaciones(Turno $turno_objeto, Juego $juego_objeto){
+        try {
+            DB::beginTransaction();
+            //obtener el ganador
+            $ganador = $turno_objeto->ganador_turnos()->first();
+            // Obtener los usuarios con estado aceptado de este juego y que no sea el que gano
+            $usuarios_que_deben_pagar = $juego_objeto->juego_users()
+                //->where('estado', 'Aceptado')
+                ->whereNotIn('estado', ['En espera'])
+                ->whereNotIn('user_id', [$ganador->user_id])
+                ->get();
+            // recorrer los usuarios 
+            foreach ($usuarios_que_deben_pagar as $usuario) {
+                //preguntar si el que gano fue un jugador retirado
+                if($usuario->estado == "Retirado"){
+                    //en caso de que fue un retirado obtener el id del lider del juego
+                    $usuario_id = $juego_objeto->obtener_lider_del_juego()->user_id;
+                    $contador_deuda_existente = Pago::where('user_id', $usuario_id)
+                        ->where('turno_id', $turno_objeto->id)
+                        ->where('estado', 'No Pagado')
+                        ->where('tipo', 'Cuota')
+                        ->count();
+                    $contador_penalizaciones_usuario = Pago::where('user_id', $usuario_id)
+                        ->where('turno_id', $turno_objeto->id)
+                        ->where('tipo', 'Penalizacion')
+                        ->count();
+                    while ($contador_deuda_existente != $contador_penalizaciones_usuario) {
+                        echo "se genero una Penalizacion para el user {$usuario_id}\n";
+                        $pago = Pago::create([
+                            "descripcion" => "Descripcion de Pago",
+                            "monto_dinero" => $juego_objeto->monto_penalizacion,
+                            "fecha_limite" => now(),
+                            "tipo" => "Penalizacion",
+                            "user_id" => $usuario_id,
+                            "turno_id" => $turno_objeto->id,
+                            "estado" => "No Pagado",
+                        ]);
+                        //incremento el contador de penalizaciones
+                        $contador_penalizaciones_usuario = $contador_penalizaciones_usuario + 1;
+                    }
+                }else{
+                    //en caso de que siga en el juego dicho usuario
+                    $usuario_id = $usuario->user_id;
+                    $deuda_existente = Pago::where('user_id', $usuario_id)
+                        ->where('turno_id', $turno_objeto->id)
+                        ->where('estado', 'No Pagado')
+                        ->where('tipo', 'Cuota')
+                        ->first();
+                    $contador_deudas_usuario = Pago::where('user_id', $usuario_id)
+                        ->where('turno_id', $turno_objeto->id)
+                        ->where('tipo', 'Penalizacion')
+                        ->count();
+                    
+                    if($deuda_existente && $contador_deudas_usuario == 0){
+                        echo "se genero una Penalizacion para el user {$usuario_id}\n";
+                        $pago = Pago::create([
+                            "descripcion" => "Descripcion de Pago",
+                            "monto_dinero" => $juego_objeto->monto_penalizacion,
+                            "fecha_limite" => now(),
+                            "tipo" => "Penalizacion",
+                            "user_id" => $usuario_id,
+                            "turno_id" => $turno_objeto->id,
+                            "estado" => "No Pagado",
+                        ]);
+                    }
+                    echo "contadordeudas = {$contador_deudas_usuario} ||| {$turno_objeto->fecha_final} \n";
+                    if($contador_deudas_usuario != 0 && now() > $turno_objeto->fecha_final){
+                        if($usuario->rol_juego != "Lider"){
+                            echo "genero la transferencia\n";
+                            //transferir pago al lider
+                            $pago = Pago::create([
+                                "descripcion" => "Transferencia de deuda del jugador identificador: {$usuario->identificador_invitacion}",
+                                "monto_dinero" => $turno_objeto->ganador()->qr_monto + $juego_objeto->monto_penalizacion,
+                                "fecha_limite" => now(),
+                                "tipo" => "Transferencia",
+                                "user_id" => $juego_objeto->obtener_lider_del_juego()->user_id,
+                                "turno_id" => $turno_objeto->id,
+                                "estado" => "No Pagado",
+                            ]);
+                            //cambiar el estado del jugador
+                        
+                            $usuario->estado = "Retirado";
+                            $usuario->save();
+                        }
+                    }
+                }
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            // Rollback de la transacción en caso de error
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    public function generar_Penalizaciones_y_Transferencias_de_los_turnos($juegos){
+        //obtener los ultimos turnos que tienen ya un ganador y finalizo su tiempo de pago
+        $ultimosTurnos = collect([]);
         //recorrer el listado de todos los juegos iniciados para obtener su ultimo turno
         foreach ($juegos as $juego) {
-            
-            //obtengo los tiempos limites para ofertar de dicho juego
-            $tiempo_para_ofertar = $juego->tiempo_para_ofertar;
-            // Separar las partes de la cadena de tiempo (horas, minutos, segundos)
-            list($horas, $minutos, $segundos) = explode(':', $tiempo_para_ofertar);
             //obtener listado de turnos que no esten dentro de la tabla de ganador turnos y ordenado por fecha de creacion el primero
             $ultimoTurno = Turno::where('juego_id', $juego->id)
-                ->whereNotIn('id', function ($query) {
+                ->whereIn('id', function ($query) {
                     $query->select('turno_id')->from('ganador_turnos');
                 })
                 ->orderByDesc('created_at')
                 ->first();
-            
-            //en caso de no encontrar turno
-            if ($ultimoTurno) {
-                //cuando fue iniciado el turno obtenido
-                $fecha_de_creacion_del_turno = Carbon::parse($ultimoTurno->fecha_inicio);
-                //obtener la sumatoria de fecha de creacion y el tiempo para ofertar
-                $fechaSumatoria = $fecha_de_creacion_del_turno->copy()->addHours($horas)->addMinutes($minutos)->addSeconds($segundos);
-                //ver si ya el tiempo termino
-                if ($fechaSumatoria < now()) {
-                    //en caso que el turno ya termino su tiempo para ofertar introducirlo
-                    $ultimosTurnos->push($ultimoTurno);
-                }
-            } else {
-                echo "No se encontró ningún turno en el juego id={$juego->id}. \n";
+            if ($ultimoTurno !== null) {
+                $ultimosTurnos->push($ultimoTurno);
             }
         }
-
         //recorer todos los turnos que necesitan tener ganador
         $ultimosTurnos->map(function ($turno) {
-            $turno = $turno;
-            //obtener la gente que oferto por el turno el mayor ofertante solo 1
-            $ofertaMayor = $turno->ofertas->sortByDesc('monto_dinero')->first();
-            //preguntar si esta vacio en las ofertas
-            if($turno->ofertas->isEmpty() || !$ofertaMayor){
-                //en caso que este vacio buscar el listado de usuarios no ganadores de ese turno y que esten en el juego
-                $jugadores_que_aun_no_ganaron = $turno->obtener_jugadores_que_aun_no_ganado();
+            $juego = $turno->juego;
+            
+            //tiempo limite para pagar
 
-                //echo "{$jugadores_que_aun_no_ganaron} \n";
-                //echo "=========================================== \n";
-                //dd($jugadores_que_aun_no_ganaron);
-                //obtener de manera aleatoria al ganador
-                $usuario_ganador = $jugadores_que_aun_no_ganaron->random();
-                //escogerlo como el ganador del turno
-                $this->guardar_ganador_turno($usuario_ganador->id, $turno->id);
-            }else{
-                //escogerlo como el ganador del turno
-                $this->guardar_ganador_turno($ofertaMayor->user_id, $ofertaMayor->turno->id);
+            $tiempo_finaliza_turno = Carbon::createFromFormat('Y-m-d H:i:s', $turno->fecha_final);
+            list($horas, $minutos, $segundos) = explode(':', $juego->tiempo_para_pagar_todo);
+            $tiempo_finaliza_turno->subHours($horas/2)->subMinutes($minutos/2)->subSeconds($segundos/2);
+
+            echo "$tiempo_finaliza_turno \n";
+            if( $tiempo_finaliza_turno->isPast() ){
+                echo "entre metodo generar_penalizaciones\n";
+                $this->generar_penalizaciones($turno, $turno->juego);
             }
         });
+    }
 
-
-
-        /////////esto para generar los turnos no tocar
-        $juegos = Juego::where('estado', 'Iniciado')->get();
+    public function generar_siguiente_turno($juegos){
         foreach ($juegos as $juego) {
             $turnosCount = Turno::where('juego_id', $juego->id)->count();
             $jugadoresCount = JuegoUser::where('juego_id', $juego->id)
-                                        ->where('estado', 'Aceptado')
+                                        //->where('estado', 'Aceptado')
+                                        ->whereNotIn('estado', ['En espera'])
                                         ->count();
             if ($turnosCount <= $jugadoresCount) {
                 echo "El juego {$juego->nombre} {$turnosCount} {$jugadoresCount}\n";
@@ -117,13 +197,20 @@ class GanadoCommand extends Command
                 if ($ultimoTurno) {
                     $fechaFinalTurno = $ultimoTurno->fecha_final;
                     $fechaActual = now();
-                    list($horas, $minutos, $segundos) = explode(':', $juego->tiempo_por_turno);
+                    //$juego->tiempo_para_ofertar
+                    //$juego->tiempo_para_pagar_todo
+                    $tiempo_para_pagar_todo = Carbon::createFromFormat('H:i:s', $juego->tiempo_para_pagar_todo);
+                    $tiempo_para_ofertar = Carbon::createFromFormat('H:i:s', $juego->tiempo_para_ofertar);
+
+                    $tiempo_total = $tiempo_para_pagar_todo->addHours($tiempo_para_ofertar->hour)
+                                                        ->addMinutes($tiempo_para_ofertar->minute)
+                                                        ->addSeconds($tiempo_para_ofertar->second);
+                    
+                    list($horas, $minutos, $segundos) = explode(':', $tiempo_total);
+                    //list($horas, $minutos, $segundos) = explode(':', $juego->tiempo_por_turno);
                     $fechaFinalNueva = $fechaActual->copy()->addHours($horas)->addMinutes($minutos)->addSeconds($segundos);
                     
                     if($fechaActual > $fechaFinalTurno){
-                        //verificar para generar penalizaciones cuando termina el tiempo del turno
-                        $this->generar_penalizaciones($ultimoTurno, $juego);
-
                         if ($turnosCount == $jugadoresCount) {
                             $juego->estado = 'Finalizado';
                             $juego->save();
@@ -142,10 +229,65 @@ class GanadoCommand extends Command
                 }
             }
         }
+    }
 
+    public function obtener_ultimo_turno_de_cada_juego_que_no_tengan_ganadores($juegos){
+        $ultimosTurnos = collect([]);
+        //recorrer el listado de todos los juegos iniciados para obtener su ultimo turno
+        foreach ($juegos as $juego) {
+            
+            //obtener listado de turnos que no esten dentro de la tabla de ganador turnos y ordenado por fecha de creacion el primero
+            $ultimoTurno = Turno::where('juego_id', $juego->id)
+                ->whereNotIn('id', function ($query) {
+                    $query->select('turno_id')->from('ganador_turnos');
+                })
+                ->orderByDesc('created_at')
+                ->first();
+            
+            //encontre turno que necesita un ganador
+            if ($ultimoTurno) {
+                //obtengo los tiempos limites para ofertar de dicho juego
+                $tiempo_para_ofertar = $juego->tiempo_para_ofertar;
+                // Separar las partes de la cadena de tiempo (horas, minutos, segundos)
+                list($horas, $minutos, $segundos) = explode(':', $tiempo_para_ofertar);
+                //cuando fue iniciado el turno obtenido
+                $fecha_de_creacion_del_turno = Carbon::parse($ultimoTurno->fecha_inicio);
+                //obtener el tiempo para ofertar
+                $tiempo_para_ofertar = $fecha_de_creacion_del_turno->copy()->addHours($horas)->addMinutes($minutos)->addSeconds($segundos);
+                //ver si ya el tiempo termino para ofertar
+                if ($tiempo_para_ofertar < now()) {
+                    //en caso que el turno ya termino su tiempo para ofertar introducirlo
+                    $ultimosTurnos->push($ultimoTurno);
+                }else{
+                    echo "El juego id = {$juego->id} tiene tiempo para ofertar. \n";
+                }
+            } else {
+                echo "No se encontró ningún turno en el juego id={$juego->id} que necesite un ganador. \n";
+            }
+        }
+        return $ultimosTurnos;
+    }
 
+    public function asignar_un_ganador_para_cada_turno($ultimosTurnos){
+        //recorer todos los turnos que necesitan tener ganador
+        $ultimosTurnos->map(function ($turno) {
+            //obtener la gente que oferto por el turno el mayor ofertante solo 1
+            $ofertaMayor = $turno->ofertas->sortByDesc('monto_dinero')->first();
+            //preguntar si esta vacio en las ofertas
+            if($turno->ofertas->isEmpty() || !$ofertaMayor){
+                //en caso que este vacio buscar el listado de usuarios no ganadores de ese turno y que esten en el juego
+                $jugadores_que_aun_no_ganaron = $turno->obtener_jugadores_que_aun_no_ganado();
 
-
+                //echo "{$jugadores_que_aun_no_ganaron} \n";
+                //obtener de manera aleatoria al ganador
+                $usuario_ganador = $jugadores_que_aun_no_ganaron->random();
+                //escogerlo como el ganador del turno
+                $this->guardar_ganador_turno($usuario_ganador->id, $turno->id);
+            }else{
+                //escogerlo como el ganador del turno
+                $this->guardar_ganador_turno($ofertaMayor->user_id, $ofertaMayor->turno->id);
+            }
+        });
     }
 
     public function guardar_ganador_turno($user_id, $turno_id)
@@ -163,7 +305,8 @@ class GanadoCommand extends Command
             $juego = $ganadorTurno->turno->juego;
             // Obtener los usuarios con estado aceptado de este juego y que no sea el que gano
             $usuarios_a_cobrar = $juego->juego_users()
-                ->where('estado', 'Aceptado')
+                //->where('estado', 'Aceptado')
+                ->whereNotIn('estado', ['En espera'])
                 ->whereNotIn('user_id', [$ganadorTurno->user_id])
                 ->get();
             //obtencion de la oferta que realizo en dicho turnno
@@ -177,14 +320,30 @@ class GanadoCommand extends Command
                 //si hay una oferta realizada por el jugador ganador restar este monto dividido en los jugadores
                 $monto_de_dinero = $juego->monto_dinero_individual - ( $oferta->monto_dinero / $usuarios_a_cobrar->count() );
             }
+            
+            $ganadorTurno->qr_monto = $monto_de_dinero;
+            $ganadorTurno->save();
+
+            //tiempo limite para pagar
+            $fecha_actual = now();
+            list($horas, $minutos, $segundos) = explode(':', $juego->tiempo_para_pagar_todo);
+            $fecha_limite = $fecha_actual->addHours($horas/2)
+                                                ->addMinutes($minutos/2)
+                                                ->addSeconds($segundos/2);
+            
             // Crear una orden de pago para cada usuario aceptado
             foreach ($usuarios_a_cobrar as $usuario) {
+                $user_id = $usuario->user_id;
+                if($usuario->estado == "Retirado")
+                {
+                    $user_id = $ganadorTurno->turno->juego->obtener_lider_del_juego()->user_id;
+                }
                 $pago = Pago::create([
                     "descripcion" => "Descripcion de Pago",
                     "monto_dinero" => $monto_de_dinero,
-                    "fecha_limite" => now(),
+                    "fecha_limite" => $fecha_limite,
                     "tipo" => "Cuota",
-                    "user_id" => $usuario->user_id,
+                    "user_id" => $user_id,
                     "turno_id" => $ganadorTurno->turno_id,
                     "estado" => "No Pagado",
                 ]);
@@ -198,47 +357,4 @@ class GanadoCommand extends Command
         }
     }
 
-    public function generar_penalizaciones(Turno $turno_objeto, Juego $juego_objeto){
-        try {
-            DB::beginTransaction();
-            //obtener el ganador
-            $ganador = $turno_objeto->ganador_turnos()->first();
-            // Obtener los usuarios con estado aceptado de este juego y que no sea el que gano
-            $usuarios_que_deben_pagar = $juego_objeto->juego_users()
-                ->where('estado', 'Aceptado')
-                ->whereNotIn('user_id', [$ganador->user_id])
-                ->get();
-            // recorrer los usuarios 
-            foreach ($usuarios_que_deben_pagar as $usuario) {
-                $deuda_existente = Pago::where('user_id', $usuario->user_id)
-                    ->where('turno_id', $turno_objeto->id)
-                    ->where('estado', 'No Pagado')
-                    ->where('tipo', 'Cuota')
-                    ->first();
-                $contador_deudas_usuario = Pago::where('user_id', $usuario->user_id)
-                    ->where('turno_id', $turno_objeto->id)
-                    ->where('tipo', 'Penalizacion')
-                    ->count();
-
-                if($deuda_existente && $contador_deudas_usuario == 0){
-                    echo "se genero una Penalizacion para el user {$usuario->id}\n";
-                    $pago = Pago::create([
-                        "descripcion" => "Descripcion de Pago",
-                        "monto_dinero" => $juego_objeto->monto_penalizacion,
-                        "fecha_limite" => now(),
-                        "tipo" => "Penalizacion",
-                        "user_id" => $usuario->user_id,
-                        "turno_id" => $turno_objeto->id,
-                        "estado" => "No Pagado",
-                    ]);
-                }
-            }
-
-            DB::commit();
-        } catch (\Exception $e) {
-            // Rollback de la transacción en caso de error
-            DB::rollBack();
-            throw $e;
-        }
-    }
 }

@@ -39,7 +39,7 @@ class JuegoUserSeeder extends Seeder
             'estado' => "Aceptado"
         ]);
         //===========================================JUEGO 2
-        JuegoUser::create([
+        /*JuegoUser::create([
             'user_id' => 1,
             'juego_id' => 2,
             'rol_juego' => "Lider",
@@ -59,6 +59,6 @@ class JuegoUserSeeder extends Seeder
             'rol_juego' => "Jugador",
             'identificador_invitacion' => '3@gmail.com',
             'estado' => "Aceptado"
-        ]);
+        ]);*/
     }
 }

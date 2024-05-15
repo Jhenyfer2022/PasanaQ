@@ -47,6 +47,7 @@ class GanadorTurnoController extends Controller
             'user_id' => $request->input('user_id'),
             'turno_id' => $request->input('turno_id'),
             'qr_gandor_deposito' => $request->input('qr_gandor_deposito'),
+            'qr_monto' => $request->input('qr_monto'),
             'estado' => $request->input('estado'),
         ]);
 

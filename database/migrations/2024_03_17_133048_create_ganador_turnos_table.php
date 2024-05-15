@@ -20,7 +20,10 @@ return new class extends Migration
             $table->unsignedBigInteger('turno_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('turno_id')->references('id')->on('turnos')->onDelete('cascade')->onUpdate('cascade');
+            
             $table->text('qr_gandor_deposito')->nullable(true);
+            $table->float('qr_monto', 10, 2)->nullable(true);
+
             $table->string('estado')->nullable(false);
             $table->timestamps();
         });

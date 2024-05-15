@@ -47,7 +47,7 @@ class Turno extends Model
     public function obtener_jugadores_que_aun_no_ganado()
     {
         $usuarios = $this->juego->juego_users()
-            ->where('estado', 'Aceptado')
+            ->whereNotIn('estado', ['En espera'])
             ->whereNotIn('user_id', function ($query) {
                 $query->select('user_id')
                     ->from('ganador_turnos')
@@ -56,9 +56,17 @@ class Turno extends Model
             })
             ->get()
             ->map(function ($juegoUser) {
-                return $juegoUser->user;
+                if($juegoUser->estado == "Retirado"){
+                    return $juegoUser->where('rol_juego', 'Lider')->first()->user; 
+                }else{
+                    return $juegoUser->user;
+                }
             });
         
         return $usuarios;
+    }
+
+    public function ganador(){
+        return $this->ganador_turnos->first();
     }
 }

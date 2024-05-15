@@ -14,13 +14,13 @@ class Juego extends Model
         'limite_maximo_de_integrantes',
         'limite_minimo_de_integrantes',
         'fecha_de_inicio',
-        'tiempo_por_turno',
+        'tiempo_para_pagar_todo',
         'tiempo_para_ofertar',
         'monto_dinero_individual',
         'estado',
         'monto_minimo_para_ofertar',
         'monto_maximo_para_ofertar',
-        'monto_penalizacion',        
+        'monto_penalizacion',
     ];
 
     public static function rules()
@@ -33,7 +33,7 @@ class Juego extends Model
             'limite_minimo_de_integrantes' => 'required|integer|min:1',
             'fecha_de_inicio' => 'required|date_format:Y-m-d H:i:s',
             'tiempo_para_ofertar' => 'required|date_format:H:i:s',
-            'tiempo_por_turno' => 'required|date_format:H:i:s',
+            'tiempo_para_pagar_todo' => 'required|date_format:H:i:s',
             'monto_dinero_individual' => 'required|numeric|min:1',
             'monto_penalizacion' => 'required|numeric|min:1',
             'estado' => 'required|string',
@@ -47,5 +47,9 @@ class Juego extends Model
 
     public function juego_users() {
         return $this->hasMany(JuegoUser::class);
+    }
+
+    public function obtener_lider_del_juego(){
+        return $this->juego_users()->where('rol_juego', 'Lider')->first();
     }
 }

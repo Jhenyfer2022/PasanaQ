@@ -15,6 +15,7 @@ class GanadorTurno extends Model
         'user_id',
         'turno_id',
         'qr_gandor_deposito',
+        'qr_monto',
         'estado' // no pagar, pagar
     ];
 
@@ -25,6 +26,7 @@ class GanadorTurno extends Model
             'user_id' => 'required|exists:users,id',
             'turno_id' => 'required|exists:turnos,id',
             'qr_gandor_deposito' => 'nullable', // No es requerido
+            'qr_monto' => 'nullable|numeric|min:0', // No es requerido
             'estado' => 'required|string', // Se puede pagar, no se puede pagar
         ];
     }
