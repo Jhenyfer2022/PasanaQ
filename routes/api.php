@@ -30,6 +30,10 @@ Route::post('/rols', 'App\Http\Controllers\RolController@store_api');
 Route::delete('/rols/{id}', 'App\Http\Controllers\RolController@delete_api');
 Route::put('/rols/{id}', 'App\Http\Controllers\RolController@update_api');
 
+Route::get('/cuentas', 'App\Http\Controllers\CuentaController@index_api');
+Route::get('/cuentas/{id}', 'App\Http\Controllers\CuentaController@show_api');
+Route::post('/cuentas', 'App\Http\Controllers\CuentaController@store_api');
+
 
 
 
