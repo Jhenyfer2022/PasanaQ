@@ -121,13 +121,14 @@ class GanadoCommand extends Command
                     $fechaFinalNueva = $fechaActual->copy()->addHours($horas)->addMinutes($minutos)->addSeconds($segundos);
                     
                     if($fechaActual > $fechaFinalTurno){
+                        //verificar para generar penalizaciones cuando termina el tiempo del turno
+                        $this->generar_penalizaciones($ultimoTurno, $juego);
+
                         if ($turnosCount == $jugadoresCount) {
                             $juego->estado = 'Finalizado';
                             $juego->save();
                             echo "El juego {$juego->nombre} se finalizo\n";
                         }else{
-                            //generar penalizaciones
-                            $this->generar_penalizaciones($ultimoTurno, $juego);
                             //crear el siguiente turno
                             $turno = Turno::create([
                                 'fecha_inicio' => $fechaActual,
