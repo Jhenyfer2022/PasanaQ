@@ -1,7 +1,7 @@
 FROM richarvey/nginx-php-fpm:1.7.2
 
 COPY . .
-COPY start.sh /start.sh
+COPY scripts/00-laravel-deploy.sh /start.sh
 
 # Image config
 ENV SKIP_COMPOSER 1
